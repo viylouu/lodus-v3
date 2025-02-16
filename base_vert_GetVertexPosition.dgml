@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="DummyNode 8" Label="DummyNode 8" Category="DummyNode" Il="" />
+    <Node Id="BasicBlockNode 10" Label="BasicBlockNode 10" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Nop &#xD;&#xA;IL_0001: Ldloca.S 0&#xD;&#xA;IL_0003: Ldarg.0 &#xD;&#xA;IL_0004: Ldflda vertex vertex&#xD;&#xA;IL_0009: Call System.Numerics.Vector3 get_pos()&#xD;&#xA;IL_000e: Ldc.R4 1&#xD;&#xA;IL_0013: Call Void .ctor(System.Numerics.Vector3, Single)&#xD;&#xA;IL_0018: Ldloc.0 &#xD;&#xA;IL_0019: Ldarg.0 &#xD;&#xA;IL_001a: Ldfld System.Numerics.Matrix4x4 wmat&#xD;&#xA;IL_001f: Call System.Numerics.Vector4 Transform(System.Numerics.Vector4, System.Numerics.Matrix4x4)&#xD;&#xA;IL_0024: Stloc.0 &#xD;&#xA;IL_0025: Ldloc.0 &#xD;&#xA;IL_0026: Ldarg.0 &#xD;&#xA;IL_0027: Ldfld System.Numerics.Matrix4x4 vpmat&#xD;&#xA;IL_002c: Call System.Numerics.Vector4 Transform(System.Numerics.Vector4, System.Numerics.Matrix4x4)&#xD;&#xA;IL_0031: Stloc.0 &#xD;&#xA;IL_0032: Ldarg.0 &#xD;&#xA;IL_0033: Ldarg.0 &#xD;&#xA;IL_0034: Ldflda vertex vertex&#xD;&#xA;IL_0039: Call System.Numerics.Vector2 get_uv()&#xD;&#xA;IL_003e: Stfld System.Numerics.Vector2 uv&#xD;&#xA;IL_0043: Ldloc.0 &#xD;&#xA;IL_0044: Stloc.1 &#xD;&#xA;IL_0045: Br.S IL_0047" />
+    <Node Id="ReturnNode 12" Label="ReturnNode 12" Category="ReturnNode" Il="" />
+  </Nodes>
+  <Links>
+    <Link Source="DummyNode 8" Target="BasicBlockNode 10" Label="" Category="Edge" />
+    <Link Source="BasicBlockNode 10" Target="ReturnNode 12" Label="" Category="Edge" />
+  </Links>
+  <Categories>
+    <Category Id="BasicBlockNode" Background="Blue" />
+    <Category Id="ReturnNode" Background="Red" />
+    <Category Id="IdomEdge" Stroke="Gray" />
+    <Category Id="Edge" Stroke="White" />
+    <Category Id="Contains" Label="Contains" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+  </Categories>
+  <Properties>
+    <Property Id="Il" Label="Instructions" DataType="System.String" />
+    <Property Id="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+  </Properties>
+</DirectedGraph>

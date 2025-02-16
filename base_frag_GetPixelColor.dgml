@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="DummyNode 1" Label="DummyNode 1" Category="DummyNode" Il="" />
+    <Node Id="BasicBlockNode 3" Label="BasicBlockNode 3" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Nop &#xD;&#xA;IL_0001: Ldarg.0 &#xD;&#xA;IL_0002: Ldflda System.Numerics.Vector2 uv&#xD;&#xA;IL_0007: Ldfld Single X&#xD;&#xA;IL_000c: Ldarg.0 &#xD;&#xA;IL_000d: Ldflda System.Numerics.Vector2 uv&#xD;&#xA;IL_0012: Ldfld Single Y&#xD;&#xA;IL_0017: Ldc.R4 0&#xD;&#xA;IL_001c: Ldc.R4 1&#xD;&#xA;IL_0021: Newobj Void .ctor(Single, Single, Single, Single)&#xD;&#xA;IL_0026: Stloc.0 &#xD;&#xA;IL_0027: Br.S IL_0029" />
+    <Node Id="ReturnNode 5" Label="ReturnNode 5" Category="ReturnNode" Il="" />
+  </Nodes>
+  <Links>
+    <Link Source="DummyNode 1" Target="BasicBlockNode 3" Label="" Category="Edge" />
+    <Link Source="BasicBlockNode 3" Target="ReturnNode 5" Label="" Category="Edge" />
+  </Links>
+  <Categories>
+    <Category Id="BasicBlockNode" Background="Blue" />
+    <Category Id="ReturnNode" Background="Red" />
+    <Category Id="IdomEdge" Stroke="Gray" />
+    <Category Id="Edge" Stroke="White" />
+    <Category Id="Contains" Label="Contains" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+  </Categories>
+  <Properties>
+    <Property Id="Il" Label="Instructions" DataType="System.String" />
+    <Property Id="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+  </Properties>
+</DirectedGraph>

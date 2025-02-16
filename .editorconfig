@@ -1,0 +1,5 @@
+# global warning changes for all c# files
+[*.cs]
+dotnet_diagnostic.CS8981.severity = none # disables "The type name 'name' only contains lower-cased ascii characters"
+dotnet_diagnostic.CS8618.severity = none # disables "Non-nullable field 'x' must contain a non-null value when exiting constructor."
+dotnet_diagnostic.CS0649.severity = none # disables "Field 'x' is never assigned to, and will always have its default value"
