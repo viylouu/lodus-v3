@@ -1,5 +1,6 @@
 using System.Numerics;
 using SimulationFramework.Drawing;
+
 using thrustr.utils;
 
 public class game {
@@ -7,7 +8,9 @@ public class game {
     static base_vert vert = new();
 
     public static void render_world(ICanvas c) {
-        vert.vpmat = Matrix4x4.CreateTranslation(0,0,-5) * Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded(math.rad(90), 640f/360, 0.1f, 1000f);
+        c.ResetState();
+
+        vert.vpmat = camera.vertprojmatrix;
 
         for(int x = map.bounds.startx; x < map.bounds.endx; x++)
             for(int y = map.bounds.starty; y < map.bounds.endy; y++)
@@ -17,5 +20,7 @@ public class game {
                     c.Fill(frag, vert);
                     c.DrawTriangles<vertex>(cube.verts, cube.inds);
                 }
+
+        c.ResetState();
     }
 }

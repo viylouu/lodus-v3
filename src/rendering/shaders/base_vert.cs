@@ -4,7 +4,7 @@ using System.Numerics;
 
 public class base_vert : VertexShader {
     [VertexData]
-    vertex vertex;
+    vertex vert;
 
     public Matrix4x4 wmat;
     public Matrix4x4 vpmat;
@@ -14,11 +14,11 @@ public class base_vert : VertexShader {
 
     [UseClipSpace]
     public override Vector4 GetVertexPosition() {
-        Vector4 result = new Vector4(vertex.pos, 1);
+        Vector4 result = new Vector4(vert.pos, 1);
         result = Vector4.Transform(result, wmat);
         result = Vector4.Transform(result, vpmat);
         
-        uv = vertex.uv;
+        uv = vert.uv;
         return result;
     }
 }
