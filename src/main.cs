@@ -12,8 +12,9 @@ partial class main {
 
         depth = Graphics.CreateDepthMask(640,360);
 
-        map.populate();
-
         game.load();
+        chunking.load();
+
+        map.populate();
     }
 }

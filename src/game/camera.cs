@@ -5,7 +5,7 @@ using thrustr.utils;
 
 public class camera {
     public static float speed = 8f;
-    public static float sens = 25f;
+    public static float sens = 50000f;
     public static float fov = 90f;
 
     public static Vector3 pos = new(0,0,8);
@@ -60,8 +60,8 @@ public class camera {
 
                 Mouse.Position = center;
 
-                yaw += d.X * sens / Window.Width * aspectratio * Time.TotalTime;
-                pitch -= d.Y * sens / Window.Height * Time.TotalTime;
+                yaw += d.X * sens / Window.Width * aspectratio * Time.DeltaTime;
+                pitch -= d.Y * sens / Window.Height * Time.DeltaTime;
 
                 pitch = math.clamp(pitch,-89.99f,89.99f);
             }

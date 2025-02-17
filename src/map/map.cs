@@ -2,7 +2,7 @@ using System.Numerics;
 
 public class map {
     public static Dictionary<Vector3, chunk> scene = new();
-    public static (int startx, int starty, int startz, int endx, int endy, int endz) bounds = (0,0,0, 3,3,3);
+    public static (int startx, int starty, int startz, int endx, int endy, int endz) bounds = (0,0,0, 3,2,3);
 
     public static byte chk_size = 16;
 
