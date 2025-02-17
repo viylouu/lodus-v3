@@ -88,7 +88,7 @@ public class intro {
 
         fontie.rendertext(c, "thrustr", new(6-ease2, Window.Height-28+down2));
         fontie.rendertext(c, "engine", new(12-ease3, Window.Height-22+down3));
-        fontie.rendertext(c, "v0.1.4.1", new(4-ease4, Window.Height-2+down4), Alignment.BottomLeft);
+        fontie.rendertext(c, "v0.1.4.2", new(4-ease4, Window.Height-2+down4), Alignment.BottomLeft);
 
         // simulationframework logo
 
