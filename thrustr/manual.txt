@@ -36,18 +36,22 @@ it is in the namespace "thrustr.basic"
 
 you can create new fonts by creating a variable of type font, and assigning it to fontie.gen_font()
 
-fontie.gen_font() accepts 2 parameters
+fontie.gen_font() accepts 4 parameters
     1. the texture
     2. the character set
+    3. the distance from the top of the sprite and the top of the actual characters excluding accents (OPTIONAL)
+    4. the distance from the top of the sprite and the bottom of the actual characters excluding parts that hang down (OPTIONAL)
 
 the texture is just an atlas of all of the characters, layed out horizontally, with the same spacing
 the character set is a string that contains all of the characters in the texture, in order of how they appear
 
 you can also use fontie.genfont_wpath()
 
-it also has 2 parameters
+it also has 4 parameters
     1. the texture
     2. a path
+    3. the distance from the top of the sprite and the top of the actual characters excluding accents (OPTIONAL)
+    4. the distance from the top of the sprite and the bottom of the actual characters excluding parts that hang down (OPTIONAL)
 
 the texture is the same as fontie.gen_font()
 the path is the directory of a charater set file
@@ -57,18 +61,19 @@ the only difference between these is that the genfont_wpath function reads the d
 
 you can render fonts by calling the fontie.render_text() function
 
-fontie.render_text() accepts 5 (6 if you dont use a Vector2 for position) parameters
+fontie.render_text() accepts 6/7 parameters
     1. the canvas
-    2. the font
-    3. the text
-    4. the position
-    5. the tint (can be a Color or a ColorF)
+    2. the text
+    3. the position (can be a Vector2 or 2 floats)
+    4. the alignment (OPTIONAL)
+    5. the font (OPTIONAL)
+    6. the tint (can be a Color or a ColorF) (OPTIONAL)
 
 currently there is 1 helper function that fontie provides: fontie.predicttextwidth
 
 it accepts 2 parameters
-    1. the font
-    2. the text
+    1. the text
+    2. the font (OPTIONAL)
 
 this returns the width in pixels of some text when rendered in the specified font
 

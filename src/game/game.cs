@@ -36,7 +36,7 @@ public class game {
                     c.WriteMask(depth, null);
                     c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
 
-                    c.Flush();
+                    //c.Flush();
                 }
 
         c.ResetState();

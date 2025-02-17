@@ -14,7 +14,8 @@ partial class main {
 
         game.render_world(c, depth);
 
-        fontie.rendertext(c, fontie.dfont, $"{math.round(1/Time.DeltaTime)} fps", 3,3, ColorF.White);
+        fontie.rendertext(c, $"{math.round(1/Time.DeltaTime)} fps", 3,3);
+        fontie.rendertext(c, $"seed: {chunking.seed}", 3,4+fontie.dfont.charh-fontie.dfont.chart);
 
         if(Keyboard.IsKeyPressed(Key.Escape))
             Application.Exit(false);

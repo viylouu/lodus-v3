@@ -30,7 +30,9 @@ public class misc {
     static AssimpContext imp = new();
 
     /// <summary>loads an fbx file as a set of vertices (Vector3[]) indices (uint[]) and texture coordinates (Vector2[])</summary>
-    public static (Vector3[], uint[], Vector2[])? loadfbx(string path) {
+    public static (Vector3[], uint[], Vector2[]) loadfbx(string path, out bool success) {
+        success = false;
+
         Scene scene = imp.ImportFile(path, PostProcessSteps.Triangulate);
 
         Console.WriteLine($"loading fbx file at \"{path}\"");
@@ -38,6 +40,10 @@ public class misc {
         List<Vector3> verts = new();
         List<uint> inds = new();
         List<Vector2> texcoords = new();
+
+        Vector3[] def_v = Array.Empty<Vector3>();
+        uint[] def_i = Array.Empty<uint>();
+        Vector2[] def_t = Array.Empty<Vector2>();
 
         if(scene != null && scene.HasMeshes)
             foreach(var mesh in scene.Meshes) {
@@ -55,7 +61,7 @@ public class misc {
                         inds.Add((uint)face.Indices[2]);
                     } else {
                         Console.WriteLine($"error! invalid face count ({face.IndexCount}) expected (3)");
-                        return null;
+                        return (def_v,def_i,def_t);
                     }
 
                 if(mesh.TextureCoordinateChannels[0] != null)
@@ -63,12 +69,13 @@ public class misc {
                         texcoords.Add(new(mesh.TextureCoordinateChannels[0][i].X, mesh.TextureCoordinateChannels[0][i].Y));
                 else {
                     Console.WriteLine("error! no texture coordinates found");
-                    return null;
+                    return (def_v,def_i,def_t);
                 }
             }
         else
             Console.WriteLine("no meshes found / failed to load file");
 
+        success = true;
         return (verts.ToArray(), inds.ToArray(), texcoords.ToArray());
     }
 }
