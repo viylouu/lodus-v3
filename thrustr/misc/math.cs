@@ -128,6 +128,11 @@ public class math {
     /// <summary>if x is negative, then return -1, else return 1 (returns 0 if x is 0)</summary>
     public static float sign(float x) => MathF.Sign(x);
 
+    /// <summary>normalizes a vector</summary>
+    public static Vector2 norm(Vector2 x) => Vector2.Normalize(x);
+    /// <summary>normalizes a vector</summary>
+    public static Vector3 norm(Vector3 x) => Vector3.Normalize(x);
+
     //trig
 
     /// <summary>calculates the cosine of a number</summary>

@@ -1,16 +1,19 @@
 ﻿using SimulationFramework;
-using SimulationFramework.Drawing.Shaders.Compiler;
+using SimulationFramework.Drawing;
 
 using thrustr.basic;
 
 partial class main {
-    static void Main() {
-        ShaderCompiler.DumpShaders = true;
-       handle.init(init, rend);
-    }
+    static void Main()
+       => handle.init(init, rend);
     
     static void init() {
-        Simulation.SetFixedResolution(640, 360, Color.Black);
-        
+        Simulation.SetFixedResolution(640, 360, Color.Black, false, true, false);
+
+        depth = Graphics.CreateDepthMask(640,360);
+
+        map.populate();
+
+        game.load();
     }
 }

@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DirectedGraph xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="DummyNode 1" Label="DummyNode 1" Category="DummyNode" Il="" />
-    <Node Id="BasicBlockNode 3" Label="BasicBlockNode 3" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Nop &#xD;&#xA;IL_0001: Ldarg.0 &#xD;&#xA;IL_0002: Ldfld SimulationFramework.Drawing.ITexture atlas&#xD;&#xA;IL_0007: Ldarg.0 &#xD;&#xA;IL_0008: Ldfld System.Numerics.Vector2 uv&#xD;&#xA;IL_000d: Call SimulationFramework.ColorF SampleUV(SimulationFramework.Drawing.ITexture, System.Numerics.Vector2)&#xD;&#xA;IL_0012: Stloc.0 &#xD;&#xA;IL_0013: Br.S IL_0015" />
-    <Node Id="ReturnNode 5" Label="ReturnNode 5" Category="ReturnNode" Il="" />
+    <Node Id="DummyNode 8" Label="DummyNode 8" Category="DummyNode" Il="" />
+    <Node Id="BasicBlockNode 10" Label="BasicBlockNode 10" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Ldarg.0 &#xD;&#xA;IL_0001: Ldarg.1 &#xD;&#xA;IL_0002: Call SimulationFramework.ColorF TextureSampleUV(SimulationFramework.Drawing.ITexture, System.Numerics.Vector2)&#xD;&#xA;IL_0007: Ret " />
+    <Node Id="ReturnNode 11" Label="ReturnNode 11" Category="ReturnNode" Il="" />
   </Nodes>
   <Links>
-    <Link Source="DummyNode 1" Target="BasicBlockNode 3" Label="" Category="Edge" />
-    <Link Source="BasicBlockNode 3" Target="ReturnNode 5" Label="" Category="Edge" />
+    <Link Source="DummyNode 8" Target="BasicBlockNode 10" Label="" Category="Edge" />
+    <Link Source="BasicBlockNode 10" Target="ReturnNode 11" Label="" Category="Edge" />
   </Links>
   <Categories>
     <Category Id="BasicBlockNode" Background="Blue" />

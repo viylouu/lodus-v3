@@ -1,3 +1,3 @@
 public class block {
-    public byte index;
+    public ushort index;
 }
