@@ -1,8 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 public class chunking {
-    static FastNoiseLite fnl;
+    static FastNoiseLite height;
+    static FastNoiseLite bigheight;
 
     static Random r;
 
@@ -13,21 +13,25 @@ public class chunking {
 
     public static void load() {
         r = new();
-        fnl = new();
+        height = new();
+        bigheight = new();
 
         seed = r.Next(int.MinValue, int.MaxValue);
 
-        fnl.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-        fnl.SetFrequency(0.025f);
-        fnl.SetFractalType(FastNoiseLite.FractalType.FBm);
-        fnl.SetSeed(seed);
+        height.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+        height.SetFrequency(0.025f);
+        height.SetFractalType(FastNoiseLite.FractalType.FBm);
+        height.SetSeed(seed);
+        bigheight.SetSeed(seed);
+        bigheight.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+        bigheight.SetFrequency(0.0035f);
     }
 
 
     public static async void gen_chunk(Vector3 pos) {
         chunk c = new();
 
-        map.scene.Add(pos, c);
+        map.scene.Add(pos, null);
 
         int cx = (int)pos.X*global.chk_size,
             cy = (int)pos.Y*global.chk_size,
@@ -60,8 +64,10 @@ public class chunking {
                     }
                 }
 
+        global.chks_loaded++;
+
         if(empty)
-            map.scene[pos] = null;
+            return;
 
         // generate mesh
         
@@ -74,13 +80,14 @@ public class chunking {
         c.m_inds = inds.ToArray();
         c.m_verts = verts.ToArray();
 
-        global.chks_loaded++;
-
         map.scene[pos] = c;
     }
 
     static block get_block_shaping(int x, int y, int z) {
-        if(fnl.GetNoise(x,z)*12+16 > y)
+        float bass = height.GetNoise(x,z)*12;
+        float big = bigheight.GetNoise(x,z)*24;
+
+        if(bass + big*big +64 > y)
             return block.def;
         else
             return block.air;

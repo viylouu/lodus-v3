@@ -6,12 +6,13 @@ using SimulationFramework.Input;
 using thrustr.utils;
 
 public class camera {
-    public static float speed = 8f;
-    public static float sprint_speed = 16f;
+    public static float speed = 20f;
+    public static float sprint_speed = 48f;
     public static float sens = 12500f;
     public static float fov = 90f;
 
     public static Vector3 pos = new(0,24,0);
+    public static Vector3 vel;
 
     public static float pitch, yaw = -90f;
 
@@ -31,6 +32,13 @@ public class camera {
 
     static Vector2 last_window_size;
 
+    static float jumpforce = 10;
+    static float gravity = 42f;
+    static float deccel = 24f;
+
+    static float maxvel = 8f;
+    static float maxvelsprint = 24f;
+
     
     public static Matrix4x4 vertprojmatrix {
         get {
@@ -42,17 +50,54 @@ public class camera {
         float spd = Keyboard.IsKeyDown(Key.LeftControl)? sprint_speed : speed;
 
         if(Keyboard.IsKeyDown(Key.W))
-            pos += movefront * spd * Time.DeltaTime;
+            vel += movefront * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.A)) 
-            pos -= right * spd * Time.DeltaTime;
+            vel -= right * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.S))
-            pos -= movefront * spd * Time.DeltaTime;
+            vel -= movefront * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.D))
-            pos += right * spd * Time.DeltaTime;
+            vel += right * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.Space))
             pos.Y += spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.LeftShift))
             pos.Y -= spd * Time.DeltaTime;
+
+        if(vel.X != 0 || vel.Z != 0) {
+            if(!Keyboard.IsKeyDown(Key.W) && !Keyboard.IsKeyDown(Key.S) && !Keyboard.IsKeyDown(Key.A) && !Keyboard.IsKeyDown(Key.D)) {
+                Vector2 horizdec = math.norm(new Vector2(vel.X,vel.Z))*deccel*Time.DeltaTime;
+
+                vel.X -= horizdec.X;
+                vel.Z -= horizdec.Y;
+            }
+
+            float mv = Keyboard.IsKeyDown(Key.LeftControl)? maxvelsprint : maxvel;
+
+            if(new Vector2(vel.X,vel.Z).Length() > mv) {
+                Vector2 horiz = math.norm(new Vector2(vel.X,vel.Z));
+
+                vel.X = horiz.X * mv;
+                vel.Z = horiz.Y * mv;
+            }
+        }
+
+        //vel.Y -= gravity * Time.DeltaTime;
+        pos += vel * Time.DeltaTime;
+
+        /*int wx = (int)math.floor(pos.X/global.chk_size),
+            wy = (int)math.floor((pos.Y-2)/global.chk_size),
+            wz = (int)math.floor(pos.Z/global.chk_size);
+
+        if(map.scene.TryGetValue(new(wx,wy,wz), out chunk? chk))
+            if(chk != null) 
+                if(chk.data != null) 
+                    for(int x = 0; x < global.chk_size; x++)
+                        for(int y = 0; y < global.chk_size; y++)
+                            for(int z = 0; z < global.chk_size; z++)
+                                if(chk.data[x,y,z] != block.air)
+                                    if(pos.Y < y+wy*global.chk_size+1.75f) {
+                                        pos.Y = y+wy*global.chk_size+1.75f;
+                                        vel.Y = 0;
+                                    }*/
 
         if(canlook) {
             if(global.fr_intercept.BaseWindowProvider.Size != last_window_size) {

@@ -44,6 +44,8 @@ partial class main {
         fontie.rendertext(c, $"window size: ({global.fr_intercept.BaseWindowProvider.Size.X}, {global.fr_intercept.BaseWindowProvider.Size.Y})", 3,5+fontie.dfont.charh*2-fontie.dfont.chart*2);
         fontie.rendertext(c, $"pos: ({camera.pos.X}, {camera.pos.Y}, {camera.pos.Z})", 3,6+fontie.dfont.charh*3-fontie.dfont.chart*3);
         fontie.rendertext(c, $"{global.chks_loaded} chunks loaded", 3,7+fontie.dfont.charh*4-fontie.dfont.chart*4);
+        fontie.rendertext(c, $"{game.chunks_rendered} chunks rendered", 3,8+fontie.dfont.charh*5-fontie.dfont.chart*5);
+        fontie.rendertext(c, $"{game.tris_rendered} tris", 3,9+fontie.dfont.charh*6-fontie.dfont.chart*6);
     }
 
     static void rend_skybox(ICanvas c) {
