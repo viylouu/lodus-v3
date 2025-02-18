@@ -12,9 +12,13 @@ partial class main {
 
         depth = Graphics.CreateDepthMask(640,360);
 
-        game.load();
         chunking.load();
+        game.load();
 
         map.populate();
+
+        skybox = meshing.load_fbx("assets/skybox.fbx");
+        sbfrag = new();
+        sbvert = new();
     }
 }

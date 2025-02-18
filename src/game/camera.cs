@@ -1,14 +1,16 @@
 using System.Numerics;
+using ImGuiNET;
 using SimulationFramework;
 using SimulationFramework.Input;
 using thrustr.utils;
 
 public class camera {
     public static float speed = 8f;
+    public static float sprint_speed = 16f;
     public static float sens = 50000f;
     public static float fov = 90f;
 
-    public static Vector3 pos = new(0,0,8);
+    public static Vector3 pos = new(0,24,0);
 
     public static float pitch, yaw = -90f;
 
@@ -26,6 +28,8 @@ public class camera {
 
     public static bool canlook = true;
 
+    static Vector2 last_window_size;
+
     
     public static Matrix4x4 vertprojmatrix {
         get {
@@ -34,20 +38,27 @@ public class camera {
     }
 
     public static void update() {
+        float spd = Keyboard.IsKeyDown(Key.LeftControl)? sprint_speed : speed;
+
         if(Keyboard.IsKeyDown(Key.W))
-            pos += movefront * speed * Time.DeltaTime;
+            pos += movefront * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.A)) 
-            pos -= right * speed * Time.DeltaTime;
+            pos -= right * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.S))
-            pos -= movefront * speed * Time.DeltaTime;
+            pos -= movefront * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.D))
-            pos += right * speed * Time.DeltaTime;
+            pos += right * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.Space))
-            pos.Y += speed * Time.DeltaTime;
+            pos.Y += spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.LeftShift))
-            pos.Y -= speed * Time.DeltaTime;
+            pos.Y -= spd * Time.DeltaTime;
 
         if(canlook) {
+            if(global.fr_intercept.BaseWindowProvider.Size != last_window_size) {
+                firstmove = true;
+                last_window_size = global.fr_intercept.BaseWindowProvider.Size;
+            }
+
             if(firstmove) {
                 Mouse.Position = center;
                 center = Mouse.Position;
@@ -78,5 +89,7 @@ public class camera {
             right = math.norm(Vector3.Cross(front, Vector3.UnitY));
             up = math.norm(Vector3.Cross(right, front));
         }
+
+        Mouse.Visible = !canlook;
     }
 }

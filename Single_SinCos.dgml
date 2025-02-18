@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DirectedGraph xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="DummyNode 20" Label="DummyNode 20" Category="DummyNode" Il="" />
-    <Node Id="BasicBlockNode 22" Label="BasicBlockNode 22" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Ldarg.0 &#xD;&#xA;IL_0001: Ldfld System.Numerics.Vector2 &lt;uv&gt;k__BackingField&#xD;&#xA;IL_0006: Ret " />
-    <Node Id="ReturnNode 23" Label="ReturnNode 23" Category="ReturnNode" Il="" />
+    <Node Id="DummyNode 57" Label="DummyNode 57" Category="DummyNode" Il="" />
+    <Node Id="BasicBlockNode 59" Label="BasicBlockNode 59" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Ldarg.0 &#xD;&#xA;IL_0001: Call System.ValueTuple`2[System.Single,System.Single] SinCos(Single)&#xD;&#xA;IL_0006: Ret " />
+    <Node Id="ReturnNode 60" Label="ReturnNode 60" Category="ReturnNode" Il="" />
   </Nodes>
   <Links>
-    <Link Source="DummyNode 20" Target="BasicBlockNode 22" Label="" Category="Edge" />
-    <Link Source="BasicBlockNode 22" Target="ReturnNode 23" Label="" Category="Edge" />
+    <Link Source="DummyNode 57" Target="BasicBlockNode 59" Label="" Category="Edge" />
+    <Link Source="BasicBlockNode 59" Target="ReturnNode 60" Label="" Category="Edge" />
   </Links>
   <Categories>
     <Category Id="BasicBlockNode" Background="Blue" />

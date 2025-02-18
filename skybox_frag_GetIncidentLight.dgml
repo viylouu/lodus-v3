@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="DummyNode 25" Label="DummyNode 25" Category="DummyNode" Il="" />
+    <Node Id="BasicBlockNode 27" Label="BasicBlockNode 27" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Nop &#xD;&#xA;IL_0001: Ldarg.1 &#xD;&#xA;IL_0002: Ldfld System.Numerics.Vector3 Direction&#xD;&#xA;IL_0007: Ldarg.0 &#xD;&#xA;IL_0008: Ldfld System.Numerics.Vector3 sun_dir&#xD;&#xA;IL_000d: Call Single Dot(System.Numerics.Vector3, System.Numerics.Vector3)&#xD;&#xA;IL_0012: Stloc.0 &#xD;&#xA;IL_0013: Ldarg.0 &#xD;&#xA;IL_0014: Ldloc.0 &#xD;&#xA;IL_0015: Call Single RayleighPhase(Single)&#xD;&#xA;IL_001a: Stloc.1 &#xD;&#xA;IL_001b: Ldc.R4 0.0625&#xD;&#xA;IL_0020: Stloc.2 &#xD;&#xA;IL_0021: Ldc.R4 0&#xD;&#xA;IL_0026: Stloc.3 &#xD;&#xA;IL_0027: Call System.Numerics.Vector3 get_Zero()&#xD;&#xA;IL_002c: Stloc.S 4&#xD;&#xA;IL_002e: Ldc.I4.0 &#xD;&#xA;IL_002f: Stloc.S 5&#xD;&#xA;IL_0031: Br.S IL_00a8" />
+    <Node Id="ControlFlowGraph 35" Label="Loop Subgraph 35" Category="ControlFlowGraph" Il="" Group="Expanded" />
+    <Node Id="BasicBlockNode 28" Label="BasicBlockNode 28" Category="BasicBlockNode" Il="&#xD;&#xA;IL_00a8: Ldloc.S 5&#xD;&#xA;IL_00aa: Ldc.I4.S 16&#xD;&#xA;IL_00ac: Clt &#xD;&#xA;IL_00ae: Stloc.S 9&#xD;&#xA;IL_00b0: Ldloc.S 9&#xD;&#xA;IL_00b2: Brtrue IL_0033" />
+    <Node Id="BasicBlockNode 29" Label="BasicBlockNode 29" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0033: Nop &#xD;&#xA;IL_0034: Ldarg.1 &#xD;&#xA;IL_0035: Ldfld System.Numerics.Vector3 Origin&#xD;&#xA;IL_003a: Ldarg.1 &#xD;&#xA;IL_003b: Ldfld System.Numerics.Vector3 Direction&#xD;&#xA;IL_0040: Ldloc.S 5&#xD;&#xA;IL_0042: Conv.R4 &#xD;&#xA;IL_0043: Ldloc.2 &#xD;&#xA;IL_0044: Mul &#xD;&#xA;IL_0045: Call System.Numerics.Vector3 op_Multiply(System.Numerics.Vector3, Single)&#xD;&#xA;IL_004a: Call System.Numerics.Vector3 op_Addition(System.Numerics.Vector3, System.Numerics.Vector3)&#xD;&#xA;IL_004f: Stloc.S 6&#xD;&#xA;IL_0051: Ldloca.S 6&#xD;&#xA;IL_0053: Call Single Length()&#xD;&#xA;IL_0058: Ldarg.0 &#xD;&#xA;IL_0059: Ldfld Single earth_radius&#xD;&#xA;IL_005e: Sub &#xD;&#xA;IL_005f: Stloc.S 7&#xD;&#xA;IL_0061: Ldloc.S 7&#xD;&#xA;IL_0063: Neg &#xD;&#xA;IL_0064: Ldarg.0 &#xD;&#xA;IL_0065: Ldfld Single hR&#xD;&#xA;IL_006a: Div &#xD;&#xA;IL_006b: Call Single Exp(Single)&#xD;&#xA;IL_0070: Ldloc.2 &#xD;&#xA;IL_0071: Mul &#xD;&#xA;IL_0072: Stloc.S 8&#xD;&#xA;IL_0074: Ldloc.3 &#xD;&#xA;IL_0075: Ldloc.S 8&#xD;&#xA;IL_0077: Add &#xD;&#xA;IL_0078: Stloc.3 &#xD;&#xA;IL_0079: Ldloc.S 4&#xD;&#xA;IL_007b: Ldloc.S 8&#xD;&#xA;IL_007d: Ldarg.0 &#xD;&#xA;IL_007e: Ldflda System.Numerics.Vector3 betaR&#xD;&#xA;IL_0083: Ldfld Single X&#xD;&#xA;IL_0088: Neg &#xD;&#xA;IL_0089: Ldloc.3 &#xD;&#xA;IL_008a: Mul &#xD;&#xA;IL_008b: Call Single Exp(Single)&#xD;&#xA;IL_0090: Newobj Void .ctor(Single)&#xD;&#xA;IL_0095: Call System.Numerics.Vector3 op_Multiply(Single, System.Numerics.Vector3)&#xD;&#xA;IL_009a: Call System.Numerics.Vector3 op_Addition(System.Numerics.Vector3, System.Numerics.Vector3)&#xD;&#xA;IL_009f: Stloc.S 4&#xD;&#xA;IL_00a1: Nop &#xD;&#xA;IL_00a2: Ldloc.S 5&#xD;&#xA;IL_00a4: Ldc.I4.1 &#xD;&#xA;IL_00a5: Add &#xD;&#xA;IL_00a6: Stloc.S 5" />
+    <Node Id="ContinueNode 34" Label="ContinueNode 34" Category="ContinueNode" Il="" />
+    <Node Id="ExitDummyNode 36" Label="ExitDummyNode 36" Category="ExitDummyNode" Il="" />
+    <Node Id="BasicBlockNode 30" Label="BasicBlockNode 30" Category="BasicBlockNode" Il="&#xD;&#xA;IL_00b7: Ldarg.0 &#xD;&#xA;IL_00b8: Ldfld Single sun_power&#xD;&#xA;IL_00bd: Ldloc.S 4&#xD;&#xA;IL_00bf: Call System.Numerics.Vector3 op_Multiply(Single, System.Numerics.Vector3)&#xD;&#xA;IL_00c4: Ldloc.1 &#xD;&#xA;IL_00c5: Call System.Numerics.Vector3 op_Multiply(System.Numerics.Vector3, Single)&#xD;&#xA;IL_00ca: Ldarg.0 &#xD;&#xA;IL_00cb: Ldfld System.Numerics.Vector3 betaR&#xD;&#xA;IL_00d0: Call System.Numerics.Vector3 op_Multiply(System.Numerics.Vector3, System.Numerics.Vector3)&#xD;&#xA;IL_00d5: Stloc.S 10&#xD;&#xA;IL_00d7: Br.S IL_00d9" />
+    <Node Id="ReturnNode 32" Label="ReturnNode 32" Category="ReturnNode" Il="" />
+  </Nodes>
+  <Links>
+    <Link Source="DummyNode 25" Target="BasicBlockNode 27" Label="" Category="Edge" />
+    <Link Source="BasicBlockNode 27" Target="ControlFlowGraph 35" Label="" Category="Edge" />
+    <Link Source="ControlFlowGraph 35" Target="BasicBlockNode 30" Label="" Category="Edge" />
+    <Link Source="ControlFlowGraph 35" Target="BasicBlockNode 28" Label="" Category="Contains" />
+    <Link Source="BasicBlockNode 28" Target="BasicBlockNode 29" Label="" Category="Edge" />
+    <Link Source="BasicBlockNode 28" Target="ExitDummyNode 36" Label="" Category="Edge" />
+    <Link Source="ControlFlowGraph 35" Target="BasicBlockNode 29" Label="" Category="Contains" />
+    <Link Source="BasicBlockNode 29" Target="ContinueNode 34" Label="" Category="Edge" />
+    <Link Source="ControlFlowGraph 35" Target="ContinueNode 34" Label="" Category="Contains" />
+    <Link Source="ControlFlowGraph 35" Target="ExitDummyNode 36" Label="" Category="Contains" />
+    <Link Source="BasicBlockNode 30" Target="ReturnNode 32" Label="" Category="Edge" />
+  </Links>
+  <Categories>
+    <Category Id="BasicBlockNode" Background="Blue" />
+    <Category Id="ReturnNode" Background="Red" />
+    <Category Id="IdomEdge" Stroke="Gray" />
+    <Category Id="Edge" Stroke="White" />
+    <Category Id="Contains" Label="Contains" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+  </Categories>
+  <Properties>
+    <Property Id="Il" Label="Instructions" DataType="System.String" />
+    <Property Id="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+  </Properties>
+</DirectedGraph>

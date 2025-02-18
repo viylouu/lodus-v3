@@ -1,6 +1,7 @@
 using System.Numerics;
 
 using SimulationFramework.Drawing;
+using thrustr.utils;
 
 public class game {
     static base_frag frag = new();
@@ -21,15 +22,22 @@ public class game {
 
         vert.vpmat = camera.vertprojmatrix;
 
-        for(int x = map.bounds.startx; x < map.bounds.endx; x++)
-            for(int y = map.bounds.starty; y < map.bounds.endy; y++)
-                for(int z = map.bounds.startz; z < map.bounds.endz; z++) {
-                    if(!map.scene.TryGetValue(new(x,y,z), out chunk chk))
-                        continue;
+        int minx = (int)math.round(camera.pos.X/global.chk_size)-4,
+            miny = (int)math.round(camera.pos.Y/global.chk_size)-4,
+            minz = (int)math.round(camera.pos.Z/global.chk_size)-4,
+            maxx = (int)math.round(camera.pos.X/global.chk_size)+4,
+            maxy = (int)math.round(camera.pos.Y/global.chk_size)+4,
+            maxz = (int)math.round(camera.pos.Z/global.chk_size)+4;
+
+        for(int x = minx; x < maxx; x++)
+            for(int y = miny; y < maxy; y++)
+                for(int z = minz; z < maxz; z++) {
+                    if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk))
+                        map.scene.Add(new(x,y,z), chunking.gen_chunk(new(x,y,z)));
                     if(chk == null)
                         continue;
 
-                    vert.wmat = Matrix4x4.CreateTranslation(x*map.chk_size,y*map.chk_size,z*map.chk_size);
+                    vert.wmat = Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size,z*global.chk_size);
 
                     c.Fill(frag, vert);
                     c.Mask(depth);

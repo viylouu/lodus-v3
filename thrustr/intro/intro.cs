@@ -14,8 +14,6 @@ public class intro {
     static ITexture smallenginetex;
     static ITexture smallsftex;
 
-    static ISound fadesfx;
-
     public static bool introplayed = true;
 
     static float introstart = 0;
@@ -25,14 +23,11 @@ public class intro {
         sftex.trydispose();
         smallenginetex.trydispose();
         smallsftex.trydispose();
-        fadesfx.trydispose();
 
         enginetex = Graphics.LoadTexture("thrustr/assets/sprites/icons/engine logo.png");
         sftex = Graphics.LoadTexture("thrustr/assets/sprites/icons/sf logo.png");
         smallenginetex = Graphics.LoadTexture("thrustr/assets/sprites/icons/engine small.png");
         smallsftex = Graphics.LoadTexture("thrustr/assets/sprites/icons/sf logo small.png");
-
-        fadesfx = Audio.LoadSound("thrustr/assets/audio/introfade.wav");
 
         introplayed = false;
         introstart = -1;

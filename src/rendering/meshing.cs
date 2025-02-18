@@ -1,9 +1,9 @@
 using System.Numerics;
-using System.Runtime.InteropServices;
+
 using thrustr.utils;
 
 public class meshing {
-    public (vertex[], uint[]) load_fbx(string path) {
+    public static (vertex[], uint[]) load_fbx(string path) {
         (Vector3[] verts, uint[] inds, Vector2[] uvs) = misc.loadfbx(path, out bool suc);
 
         if(!suc)

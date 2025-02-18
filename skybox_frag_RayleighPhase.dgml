@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DirectedGraph xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="DummyNode 22" Label="DummyNode 22" Category="DummyNode" Il="" />
-    <Node Id="BasicBlockNode 24" Label="BasicBlockNode 24" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Ldarg.0 &#xD;&#xA;IL_0001: Ldarg.1 &#xD;&#xA;IL_0002: Call SimulationFramework.ColorF TextureSampleUV(SimulationFramework.Drawing.ITexture, System.Numerics.Vector2)&#xD;&#xA;IL_0007: Ret " />
-    <Node Id="ReturnNode 25" Label="ReturnNode 25" Category="ReturnNode" Il="" />
+    <Node Id="DummyNode 50" Label="DummyNode 50" Category="DummyNode" Il="" />
+    <Node Id="BasicBlockNode 52" Label="BasicBlockNode 52" Category="BasicBlockNode" Il="&#xD;&#xA;IL_0000: Nop &#xD;&#xA;IL_0001: Ldc.R4 3&#xD;&#xA;IL_0006: Ldc.R4 1&#xD;&#xA;IL_000b: Ldarg.1 &#xD;&#xA;IL_000c: Ldarg.1 &#xD;&#xA;IL_000d: Mul &#xD;&#xA;IL_000e: Add &#xD;&#xA;IL_000f: Mul &#xD;&#xA;IL_0010: Ldc.R4 16&#xD;&#xA;IL_0015: Ldarg.0 &#xD;&#xA;IL_0016: Ldfld Single PI&#xD;&#xA;IL_001b: Mul &#xD;&#xA;IL_001c: Div &#xD;&#xA;IL_001d: Stloc.0 &#xD;&#xA;IL_001e: Br.S IL_0020" />
+    <Node Id="ReturnNode 54" Label="ReturnNode 54" Category="ReturnNode" Il="" />
   </Nodes>
   <Links>
-    <Link Source="DummyNode 22" Target="BasicBlockNode 24" Label="" Category="Edge" />
-    <Link Source="BasicBlockNode 24" Target="ReturnNode 25" Label="" Category="Edge" />
+    <Link Source="DummyNode 50" Target="BasicBlockNode 52" Label="" Category="Edge" />
+    <Link Source="BasicBlockNode 52" Target="ReturnNode 54" Label="" Category="Edge" />
   </Links>
   <Categories>
     <Category Id="BasicBlockNode" Background="Blue" />
