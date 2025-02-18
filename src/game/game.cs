@@ -33,7 +33,7 @@ public class game {
             for(int y = miny; y < maxy; y++)
                 for(int z = minz; z < maxz; z++) {
                     if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk))
-                        map.scene.Add(new(x,y,z), chunking.gen_chunk(new(x,y,z)));
+                        chunking.gen_chunk(new(x,y,z));
                     if(chk == null)
                         continue;
 

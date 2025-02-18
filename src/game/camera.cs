@@ -1,13 +1,14 @@
 using System.Numerics;
-using ImGuiNET;
+
 using SimulationFramework;
 using SimulationFramework.Input;
+
 using thrustr.utils;
 
 public class camera {
     public static float speed = 8f;
     public static float sprint_speed = 16f;
-    public static float sens = 50000f;
+    public static float sens = 12500f;
     public static float fov = 90f;
 
     public static Vector3 pos = new(0,24,0);

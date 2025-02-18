@@ -101,6 +101,6 @@ public class intro {
 
         fontie.rendertext(c, "simulation", new(6-ease6, Window.Height-28+down6));
         fontie.rendertext(c, "framework", new(8-ease7, Window.Height-22+down7));
-        fontie.rendertext(c, "v0.3.0 a12", new(4-ease8, Window.Height-2+down8), Alignment.BottomLeft);
+        fontie.rendertext(c, "v0.3.0 a13", new(4-ease8, Window.Height-2+down8), Alignment.BottomLeft);
     }
 }

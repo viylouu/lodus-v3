@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 public class chunking {
@@ -6,6 +7,9 @@ public class chunking {
     static Random r;
 
     public static int seed;
+
+    public static ulong max_actions_before_wait = 2048;
+    static ulong actions = 0;
 
     public static void load() {
         r = new();
@@ -20,8 +24,10 @@ public class chunking {
     }
 
 
-    public static chunk gen_chunk(Vector3 pos) {
+    public static async void gen_chunk(Vector3 pos) {
         chunk c = new();
+
+        map.scene.Add(pos, c);
 
         int cx = (int)pos.X*global.chk_size,
             cy = (int)pos.Y*global.chk_size,
@@ -29,24 +35,48 @@ public class chunking {
 
         Console.WriteLine($"making chunk at ({cx}, {cy}, {cz})");
 
+        bool empty = true;
+
         c.data = new block[global.chk_size,global.chk_size,global.chk_size];
 
         // generate data
 
+        await Task.Delay(1);
+
         for(int x = 0; x < global.chk_size; x++)
             for(int y = 0; y < global.chk_size; y++)
                 for(int z = 0; z < global.chk_size; z++) {
-                    c.data[x,y,z] = get_block_shaping(x+cx,y+cy,z+cz);
+                    block b = get_block_shaping(x+cx,y+cy,z+cz);
+                    c.data[x,y,z] = b;
+
+                    if(b == block.def)
+                        empty = false;
+
+                    actions++;
+
+                    if(actions > max_actions_before_wait) {
+                        actions = 0;
+                        await Task.Delay(1);
+                    }
                 }
+
+        if(empty)
+            map.scene[pos] = null;
 
         // generate mesh
         
+        await Task.Delay(1);
+
         (List<vertex> verts, List<uint> inds) = generate_mesh(c.data, cx,cy,cz);
+
+        await Task.Delay(1);
 
         c.m_inds = inds.ToArray();
         c.m_verts = verts.ToArray();
 
-        return c;
+        global.chks_loaded++;
+
+        map.scene[pos] = c;
     }
 
     static block get_block_shaping(int x, int y, int z) {
