@@ -58,7 +58,13 @@ public class game {
                     c.Fill(frag, vert);
                     c.Mask(depth);
                     c.WriteMask(depth, null);
-                    c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
+                    //c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
+                    
+                    // temp fix for simf bug, but its only here bc chunking is async and most graphics class functions dont work async (its also easy to remove)
+                    if (chk.geom == null && chk.m_inds.Length > 0)
+                        chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);
+                    if (chk.geom != null)
+                        c.DrawGeometry(chk.geom);
 
                     //c.Flush();
                 }
