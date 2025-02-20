@@ -7,7 +7,8 @@ public class game {
     static base_frag frag = new();
     static base_vert vert = new();
 
-    static ITexture atlas;
+    static ITexture shading, blockatlas;
+    public static Vector2 atlassize;
 
     static int renderdist = 8;
 
@@ -15,9 +16,14 @@ public class game {
     public static int chunks_rendered = 0;
 
     public static void load() {
-        atlas = Graphics.LoadTexture("assets/atlas.png");
+        shading = Graphics.LoadTexture("assets/shading.png");
+        blockatlas = Graphics.LoadTexture("assets/block atlas.png");
 
-        frag.atlas = atlas;
+        atlassize = new Vector2(blockatlas.Width/32,blockatlas.Height/48);
+
+        frag.shading = shading;
+        frag.atlas = blockatlas;
+        frag.atlassize = atlassize;
     }
 
     public static void render_world(ICanvas c, IDepthMask depth) {
@@ -59,7 +65,7 @@ public class game {
                     c.Mask(depth);
                     c.WriteMask(depth, null);
                     //c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
-                    
+
                     // temp fix for simf bug, but its only here bc chunking is async and most graphics class functions dont work async (its also easy to remove)
                     if (chk.geom == null && chk.m_inds.Length > 0)
                         chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);

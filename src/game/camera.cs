@@ -58,9 +58,9 @@ public class camera {
         if(Keyboard.IsKeyDown(Key.D))
             vel += right * spd * Time.DeltaTime;
         if(Keyboard.IsKeyDown(Key.Space))
-            pos.Y += spd * Time.DeltaTime;
+            pos.Y += spd * Time.DeltaTime * 0.35f;
         if(Keyboard.IsKeyDown(Key.LeftShift))
-            pos.Y -= spd * Time.DeltaTime;
+            pos.Y -= spd * Time.DeltaTime * 0.35f;
 
         if(vel.X != 0 || vel.Z != 0) {
             if(!Keyboard.IsKeyDown(Key.W) && !Keyboard.IsKeyDown(Key.S) && !Keyboard.IsKeyDown(Key.A) && !Keyboard.IsKeyDown(Key.D)) {

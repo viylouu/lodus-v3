@@ -137,6 +137,7 @@ public class chunking {
                                 for (int v = 0; v < 4; v++) {
                                     vertex vtx = cube.f_verts[i, v];
                                     vtx.pos += new Vector3(x, y, z); // Translate position based on the chunk's coordinates
+                                    vtx.uv /= game.atlassize;
                                     verts.Add(vtx); // Add the vertex to the list
                                 }
 
