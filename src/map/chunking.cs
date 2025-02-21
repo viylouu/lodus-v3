@@ -7,12 +7,13 @@ public class chunking {
     static FastNoiseLite bigheight;
     static FastNoiseLite caves;
     static FastNoiseLite bigcaves;
+    static FastNoiseLite steeps;
 
     static Random r;
 
     public static int seed;
 
-    public static ulong max_actions_before_wait = 128;
+    public static ulong max_actions_before_wait = 64;
     static ulong actions = 0;
 
     public static void load() {
@@ -21,6 +22,7 @@ public class chunking {
         bigheight = new();
         caves = new();
         bigcaves = new();
+        steeps = new();
 
         seed = r.Next(int.MinValue, int.MaxValue);
 
@@ -44,6 +46,15 @@ public class chunking {
         bigcaves.SetSeed(seed);
         bigcaves.SetFractalType(FastNoiseLite.FractalType.FBm);
         bigcaves.SetFractalOctaves(5);
+
+        steeps.SetNoiseType(FastNoiseLite.NoiseType.Value);
+        steeps.SetFrequency(0.0025f);
+        steeps.SetSeed(seed);
+        steeps.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
+        steeps.SetDomainWarpAmp(126);
+        steeps.SetFractalType(FastNoiseLite.FractalType.DomainWarpProgressive);
+        steeps.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
+        steeps.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
     }
 
 
@@ -53,7 +64,7 @@ public class chunking {
         lock(map.scene)
             map.scene.Add(pos, null);
 
-        int cx = (int)pos.X*global.chk_size,
+        float cx = (int)pos.X*global.chk_size,
             cy = (int)pos.Y*global.chk_size,
             cz = (int)pos.Z*global.chk_size;
 
@@ -100,8 +111,11 @@ public class chunking {
                                 c.data[x,y,z] = block.grass;
                             else if(y+cy > get_noise_height(x+cx,z+cz)-6)
                                 c.data[x,y,z] = block.dirt;
-                            else
-                                c.data[x,y,z] = block.cobble;
+                            else {
+                                // stones
+
+                                c.data[x,y,z] = block.generic_stone;
+                            }
                         }
 
                         actions++;
@@ -200,12 +214,13 @@ public class chunking {
 
     static float get_noise_height(float x, float z) {
         float bass = height.GetNoise(x,z)*12;
-        float big = bigheight.GetNoise(x,z)*24;
+        float big = bigheight.GetNoise(x,z)*12 +12;
+        float steep = steeps.GetNoise(x,z)*64;
 
-        return bass + big*big +64;
+        return bass + math.pow(big,1.65f) + steep +64;
     }
 
-    static block get_block_shaping(int x, int y, int z) {
+    static block get_block_shaping(float x, float y, float z) {
         if(y > get_noise_height(x,z))
             return block.air;
 

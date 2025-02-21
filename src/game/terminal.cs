@@ -106,6 +106,11 @@ public class terminal {
 
         switch(command[0]) {
             case "tp":
+                if(command.Length != 4) {
+                    Console.WriteLine("invalid command!");
+                    break;
+                }
+
                 camera.pos = new(
                     Convert.ToSingle(command[1]),
                     Convert.ToSingle(command[2]),

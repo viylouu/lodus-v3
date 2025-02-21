@@ -1,7 +1,7 @@
-using System.ComponentModel;
 using System.Numerics;
-using SimulationFramework;
+
 using SimulationFramework.Drawing;
+
 using thrustr.utils;
 
 public class game {
@@ -11,7 +11,7 @@ public class game {
     static ITexture shading, blockatlas;
     public static Vector2 atlassize;
 
-    static int renderdist = 16;
+    static int renderdist = 10;
 
     public static int tris_rendered = 0;
     public static int chunks_rendered = 0;
@@ -25,7 +25,7 @@ public class game {
         frag.shading = shading;
         frag.atlas = blockatlas;
         frag.atlassize = atlassize;
-        frag.fogdist = global.chk_size*(renderdist/2);
+        frag.fogdist = global.chk_size*renderdist;
         frag.quant = 18;
     }
 
@@ -38,51 +38,61 @@ public class game {
         frag.campos = camera.pos;
         frag.fog = main.col;
 
-        int render_dist = renderdist/2;
-
-        int minx = (int)math.round(camera.pos.X/global.chk_size)-render_dist,
-            miny = (int)math.round(camera.pos.Y/global.chk_size)-render_dist,
-            minz = (int)math.round(camera.pos.Z/global.chk_size)-render_dist,
-            maxx = (int)math.round(camera.pos.X/global.chk_size)+render_dist,
-            maxy = (int)math.round(camera.pos.Y/global.chk_size)+render_dist,
-            maxz = (int)math.round(camera.pos.Z/global.chk_size)+render_dist;
+        long minx = (long)math.round(camera.pos.X/global.chk_size)-renderdist,
+            miny = (long)math.round(camera.pos.Y/global.chk_size)-renderdist,
+            minz = (long)math.round(camera.pos.Z/global.chk_size)-renderdist,
+            maxx = (long)math.round(camera.pos.X/global.chk_size)+renderdist,
+            maxy = (long)math.round(camera.pos.Y/global.chk_size)+renderdist,
+            maxz = (long)math.round(camera.pos.Z/global.chk_size)+renderdist;
 
         tris_rendered = 0;
         chunks_rendered = 0;
 
-        for(int x = minx; x < maxx; x++)
-            for(int y = miny; y < maxy; y++)
-                for(int z = minz; z < maxz; z++)
-                    if(math.sqrdist(camera.pos, new(x*global.chk_size,y*global.chk_size,z*global.chk_size)) < math.sqr(render_dist*global.chk_size)) {
-                        if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk)) {
-                            chunking.gen_chunk(new(x,y,z));
-                            continue;
-                        } if(chk == null)
-                            continue;
-                        if(chk.m_inds.Length == 0)
-                            continue;
+        Plane[] frustumPlanes = frustum.GetFrustumPlanes(camera.vertprojmatrix);
 
-                        vert.wmat = Matrix4x4.CreateScale(Vector3.One * chk.size) * Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size,z*global.chk_size);
+        for(long x = minx; x < maxx; x++)
+            for(long y = miny; y < maxy; y++)
+                for(long z = minz; z < maxz; z++) {
+                    if(math.sqrdist(camera.pos, new(x*global.chk_size,y*global.chk_size,z*global.chk_size)) > math.sqr(renderdist*global.chk_size))
+                        continue;
 
-                        tris_rendered += chk.m_inds.Length/3;
-                        chunks_rendered++;
+                    if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk)) {
+                        chunking.gen_chunk(new(x,y,z));
+                        continue;
+                    } if(chk == null)
+                        continue;
+                    if(chk.m_inds.Length == 0)
+                        continue;
 
-                        c.Fill(frag, vert);
-                        c.Mask(depth);
-                        c.WriteMask(depth, null);
-                        //c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
+                    Vector3 min = new(x*global.chk_size,y*global.chk_size,z*global.chk_size);
+                    Vector3 max = new(x*global.chk_size+global.chk_size,y*global.chk_size+global.chk_size,z*global.chk_size+global.chk_size);
 
-                        // temp fix for simf bug, but its only here bc chunking is async and most graphics class functions dont work async (its also easy to remove)
-                        if (chk.geom == null && chk.m_inds.Length > 0)
-                            chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);
-                        if (chk.geom != null)
-                            c.DrawGeometry(chk.geom);
+                    if(!frustum.IsAABBInFrustum(min,max,frustumPlanes))
+                        continue;
 
-                        chk.size += ease.dyn(chk.size, 1, 12);
-                        chk.size = math.clamp01(chk.size);
+                    
 
-                        //c.Flush();
-                    }
+                    vert.wmat = Matrix4x4.CreateScale(chk.size) * Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size-(1-chk.size)*global.chk_size*2,z*global.chk_size);
+
+                    tris_rendered += chk.m_inds.Length/3;
+                    chunks_rendered++;
+
+                    c.Fill(frag, vert);
+                    c.Mask(depth);
+                    c.WriteMask(depth, null);
+                    //c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
+
+                    // temp fix for simf bug, but its only here bc chunking is async and most graphics class functions dont work async (its also easy to remove)
+                    if (chk.geom == null && chk.m_inds.Length > 0)
+                        chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);
+                    if (chk.geom != null)
+                        c.DrawGeometry(chk.geom);
+
+                    chk.size += ease.dyn(chk.size, 1, 12);
+                    chk.size = math.clamp01(chk.size);
+
+                    //c.Flush();
+                }
 
         c.ResetState();
     }
