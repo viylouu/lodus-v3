@@ -29,13 +29,17 @@ partial class main {
 
         rend_ui(c);
 
+        terminal.render(c);
+
+
         if(Keyboard.IsKeyPressed(Key.Escape))
             Application.Exit(false);
 
         if(Keyboard.IsKeyPressed(Key.Tab))
             focus = !focus;
 
-        camera.canlook = focus;
+        camera.canlook = focus && !terminal.enabled;
+        camera.canmove = !terminal.enabled;
     }
 
     static void rend_ui(ICanvas c) {

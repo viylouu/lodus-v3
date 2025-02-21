@@ -8,7 +8,7 @@ partial class main {
        => handle.init(init, rend);
     
     static void init() {
-        Simulation.SetFixedResolution(640, 360, Color.Black, false, true, false);
+        Simulation.SetFixedResolution(640,360, Color.Black, false,true,false);
 
         depth = Graphics.CreateDepthMask(640,360);
 

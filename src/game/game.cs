@@ -10,7 +10,7 @@ public class game {
     static ITexture shading, blockatlas;
     public static Vector2 atlassize;
 
-    static int renderdist = 8;
+    static int renderdist = 16;
 
     public static int tris_rendered = 0;
     public static int chunks_rendered = 0;

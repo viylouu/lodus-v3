@@ -46,12 +46,33 @@ public class math {
     /// <summary>rounds a number down</summary>
     public static Vector3 floor(Vector3 a) => new (MathF.Floor(a.X), MathF.Floor(a.Y), MathF.Floor(a.Z));
 
+    /// <summary>rounds a number up if it's positive and down if it's negative</summary>
+    public static float nceil(float a) => a > 0? MathF.Ceiling(a) : MathF.Floor(a);
+    /// <summary>rounds a number up if it's positive and down if it's negative</summary>
+    public static Vector2 nceil(Vector2 a) => new (nceil(a.X), nceil(a.Y));
+    /// <summary>rounds a number up if it's positive and down if it's negative</summary>
+    public static Vector3 nceil(Vector3 a) => new (nceil(a.X), nceil(a.Y), nceil(a.Z));
+
+    /// <summary>rounds a number down if it's positive and up if it's negative</summary>
+    public static float nfloor(float a) => a > 0? MathF.Floor(a) : MathF.Ceiling(a);
+    /// <summary>rounds a number down if it's positive and up if it's negative</summary>
+    public static Vector2 nfloor(Vector2 a) => new (nfloor(a.X), nfloor(a.Y));
+    /// <summary>rounds a number down if it's positive and up if it's negative</summary>
+    public static Vector3 nfloor(Vector3 a) => new (nfloor(a.X), nfloor(a.Y), nfloor(a.Z));
+
     /// <summary>calculates the absolute value of a number</summary>
     public static float abs(float a) => MathF.Abs(a);
     /// <summary>calculates the absolute value of a number</summary>
     public static Vector2 abs(Vector2 a) => new (MathF.Abs(a.X), MathF.Abs(a.Y));
     /// <summary>calculates the absolute value of a number</summary>
     public static Vector3 abs(Vector3 a) => new (MathF.Abs(a.X), MathF.Abs(a.Y), MathF.Abs(a.Z));
+
+    /// <summary>calculates the negative absolute value of a number</summary>
+    public static float nabs(float a) => -MathF.Abs(a);
+    /// <summary>calculates the negative absolute value of a number</summary>
+    public static Vector2 nabs(Vector2 a) => new (-MathF.Abs(a.X), -MathF.Abs(a.Y));
+    /// <summary>calculates the negative absolute value of a number</summary>
+    public static Vector3 nabs(Vector3 a) => new (-MathF.Abs(a.X), -MathF.Abs(a.Y), -MathF.Abs(a.Z));
     
     /// <summary>clamps a number between two values (b and c)</summary>
     public static float clamp(float a, float b, float c) => Math.Clamp(a,b,c);
@@ -132,6 +153,29 @@ public class math {
     public static Vector2 norm(Vector2 x) => Vector2.Normalize(x);
     /// <summary>normalizes a vector</summary>
     public static Vector3 norm(Vector3 x) => Vector3.Normalize(x);
+    /// <summary>returns a vector that is perpendicular to both of the input vectors</summary>
+    public static Vector3 cross(Vector3 x, Vector3 y) => Vector3.Cross(x,y);
+
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero</summary>
+    public static float mod(float a, float b) => a%b;
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero</summary>
+    public static Vector2 mod(Vector2 a, float b) => new(a.X%b,a.Y%b);
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero</summary>
+    public static Vector3 mod(Vector3 a, float b) => new(a.X%b,a.Y%b,a.Z%b);
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero</summary>
+    public static Vector2 mod(Vector2 a, Vector2 b) => new(a.X%b.X,a.Y%b.Y);
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero</summary>
+    public static Vector3 mod(Vector3 a, Vector3 b) => new(a.X%b.X,a.Y%b.Y,a.Z%b.Z);
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero, but if it goes below zero, it wraps around to the max</summary>
+    public static float wmod(float a, float b) => ((a%b)+b)%b;
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero, but if it goes below zero, it wraps around to the max</summary>
+    public static Vector2 wmod(Vector2 a, float b) => new(wmod(a.X,b),wmod(a.Y,b));
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero, but if it goes below zero, it wraps around to the max</summary>
+    public static Vector3 wmod(Vector3 a, float b) => new(wmod(a.X,b),wmod(a.Y,b),wmod(a.Z,b));
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero, but if it goes below zero, it wraps around to the max</summary>
+    public static Vector2 wmod(Vector2 a, Vector2 b) => new(wmod(a.X,b.X),wmod(a.Y,b.Y));
+    /// <summary>returns a number, that when going beyond a specific value, resets to zero, but if it goes below zero, it wraps around to the max</summary>
+    public static Vector3 wmod(Vector3 a, Vector3 b) => new(wmod(a.X,b.X),wmod(a.Y,b.Y),wmod(a.Z,b.Z));
 
     //trig
 

@@ -9,9 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
-    <PackageReference Include="SimulationFramework" Version="0.3.0-alpha.12" />
-    <PackageReference Include="SimulationFramework.Desktop" Version="0.3.0-alpha.12" />
-    <PackageReference Include="SimulationFramework.OpenGL" Version="0.3.0-alpha.12" />
+    <PackageReference Include="SimulationFramework" Version="0.3.0-alpha.13" />
+    <PackageReference Include="SimulationFramework.Desktop" Version="0.3.0-alpha.13" />
+    <PackageReference Include="SimulationFramework.OpenGL" Version="0.3.0-alpha.13" />
+    <PackageReference Include="TextCopy" Version="6.2.1" />
   </ItemGroup>
 
 </Project>

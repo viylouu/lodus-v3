@@ -6,5 +6,5 @@ public class chunk {
     public vertex[] m_verts;
     public uint[] m_inds;
 
-    public IGeometry geom;
+    public IGeometry? geom;
 }
