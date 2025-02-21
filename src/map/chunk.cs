@@ -7,4 +7,6 @@ public class chunk {
     public uint[] m_inds;
 
     public IGeometry? geom;
+
+    public float size;
 }

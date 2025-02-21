@@ -26,6 +26,7 @@ public class game {
         frag.atlas = blockatlas;
         frag.atlassize = atlassize;
         frag.fogdist = global.chk_size*(renderdist/2);
+        frag.quant = 18;
     }
 
     public static void render_world(ICanvas c, IDepthMask depth) {
@@ -61,7 +62,7 @@ public class game {
                         if(chk.m_inds.Length == 0)
                             continue;
 
-                        vert.wmat = Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size,z*global.chk_size);
+                        vert.wmat = Matrix4x4.CreateScale(Vector3.One * chk.size) * Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size,z*global.chk_size);
 
                         tris_rendered += chk.m_inds.Length/3;
                         chunks_rendered++;
@@ -76,6 +77,9 @@ public class game {
                             chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);
                         if (chk.geom != null)
                             c.DrawGeometry(chk.geom);
+
+                        chk.size += ease.dyn(chk.size, 1, 12);
+                        chk.size = math.clamp01(chk.size);
 
                         //c.Flush();
                     }

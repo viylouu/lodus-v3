@@ -192,6 +192,8 @@ public class chunking {
         c.m_inds = inds.ToArray();
         c.m_verts = verts.ToArray(); 
 
+        c.size = 0;
+
         lock(map.scene)
             map.scene[pos] = c;
     }

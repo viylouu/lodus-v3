@@ -10,6 +10,7 @@ using thrustr.utils;
 public class camera {
     public static float speed = 20f;
     public static float sprint_speed = 48f;
+    public static float alt_speed = 256f;
     public static float sens = 12500f;
     public static float deffov = 90f;
     public static float zoomfov = 30f;
@@ -45,6 +46,7 @@ public class camera {
 
     static float maxvel = 8f;
     static float maxvelsprint = 24f;
+    static float maxvelalt = 64f;
 
     
     public static Matrix4x4 vertprojmatrix {
@@ -55,7 +57,7 @@ public class camera {
 
     public static void update() {
         if(canmove) {
-            float spd = Keyboard.IsKeyDown(Key.LeftControl)? sprint_speed : speed;
+            float spd = Keyboard.IsKeyDown(Key.LeftAlt)? alt_speed : Keyboard.IsKeyDown(Key.LeftControl)? sprint_speed : speed;
 
             if(Keyboard.IsKeyDown(Key.W))
                 vel += movefront * spd * Time.DeltaTime;
@@ -79,7 +81,7 @@ public class camera {
                 vel.Z -= horizdec.Y;
             }
 
-            float mv = Keyboard.IsKeyDown(Key.LeftControl)? maxvelsprint : maxvel;
+            float mv = Keyboard.IsKeyDown(Key.LeftAlt)? maxvelalt : Keyboard.IsKeyDown(Key.LeftControl)? maxvelsprint : maxvel;
 
             if(new Vector2(vel.X,vel.Z).Length() > mv) {
                 Vector2 horiz = math.norm(new Vector2(vel.X,vel.Z));

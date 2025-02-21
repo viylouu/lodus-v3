@@ -111,7 +111,7 @@ public class terminal {
                     Convert.ToSingle(command[2]),
                     Convert.ToSingle(command[3])
                 );
-                break;
+                break; 
         }
     }
 }
