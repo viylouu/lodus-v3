@@ -5,6 +5,7 @@ using SimulationFramework.Input;
 using thrustr.basic;
 
 using TextCopy;
+using System.Xml;
 
 
 public class terminal {
@@ -37,6 +38,9 @@ public class terminal {
         }
 
         if(Keyboard.IsKeyPressed(Key.Enter)) {
+            if(enabled && cur[0] == command_char)
+                do_commands();
+
             enabled = !enabled;
             show_pipe = true;
             pipeing = 0;
@@ -70,6 +74,10 @@ public class terminal {
         { Key.Key4, "$4" }, { Key.Key5, "%5" }, { Key.Key6, "^6" },
         { Key.Key7, "&7" }, { Key.Key8, "*8" }, { Key.Key9, "(9" },
         { Key.Key0, ")0" },
+
+        // misc
+
+        { Key.Space, "  " },
     };
 
     static void kb_input() {
@@ -87,5 +95,23 @@ public class terminal {
 
         if(Keyboard.IsKeyDown(Key.LeftControl) && Keyboard.IsKeyPressed(Key.V))
             cur += ClipboardService.GetText();
+
+        if(cur.Length > 0 && Keyboard.IsKeyPressed(Key.Backspace))
+            cur = cur.Remove(cur.Length-1);
+    }
+
+    static void do_commands() {
+        string[] command = cur.Split(" ");
+        command[0] = command[0].Remove(0,1);
+
+        switch(command[0]) {
+            case "tp":
+                camera.pos = new(
+                    Convert.ToSingle(command[1]),
+                    Convert.ToSingle(command[2]),
+                    Convert.ToSingle(command[3])
+                );
+                break;
+        }
     }
 }

@@ -1,24 +1,26 @@
-using System.Linq.Expressions;
 using System.Numerics;
-using Silk.NET.Input;
-using SimulationFramework.Drawing;
+
 using thrustr.utils;
 
 public class chunking {
     static FastNoiseLite height;
     static FastNoiseLite bigheight;
+    static FastNoiseLite caves;
+    static FastNoiseLite bigcaves;
 
     static Random r;
 
     public static int seed;
 
-    public static ulong max_actions_before_wait = 256;
+    public static ulong max_actions_before_wait = 128;
     static ulong actions = 0;
 
     public static void load() {
         r = new();
         height = new();
         bigheight = new();
+        caves = new();
+        bigcaves = new();
 
         seed = r.Next(int.MinValue, int.MaxValue);
 
@@ -26,16 +28,30 @@ public class chunking {
         height.SetFrequency(0.025f);
         height.SetFractalType(FastNoiseLite.FractalType.FBm);
         height.SetSeed(seed);
+
         bigheight.SetSeed(seed);
         bigheight.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
         bigheight.SetFrequency(0.0035f);
+
+        caves.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+        caves.SetFrequency(0.0125f);
+        caves.SetSeed(seed);
+        caves.SetFractalType(FastNoiseLite.FractalType.FBm);
+        caves.SetFractalOctaves(5);
+
+        bigcaves.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+        bigcaves.SetFrequency(0.0035f);
+        bigcaves.SetSeed(seed);
+        bigcaves.SetFractalType(FastNoiseLite.FractalType.FBm);
+        bigcaves.SetFractalOctaves(5);
     }
 
 
     public static async void gen_chunk(Vector3 pos) {
         chunk c = new();
 
-        map.scene.Add(pos, null);
+        lock(map.scene)
+            map.scene.Add(pos, null);
 
         int cx = (int)pos.X*global.chk_size,
             cy = (int)pos.Y*global.chk_size,
@@ -81,7 +97,11 @@ public class chunking {
                     if(c.data[x,y,z] == block.def) {
                         {
                             if(y+cy > get_noise_height(x+cx,z+cz)-1)
+                                c.data[x,y,z] = block.grass;
+                            else if(y+cy > get_noise_height(x+cx,z+cz)-6)
                                 c.data[x,y,z] = block.dirt;
+                            else
+                                c.data[x,y,z] = block.cobble;
                         }
 
                         actions++;
@@ -184,10 +204,18 @@ public class chunking {
     }
 
     static block get_block_shaping(int x, int y, int z) {
-        if(get_noise_height(x,z) > y)
-            return block.def;
-        else
+        if(y > get_noise_height(x,z))
             return block.air;
+
+        float cave = caves.GetNoise(x, y, z);
+        float depthFactor = 1.0f - (y/1024f);
+        float lowerThreshold = 0.25f / depthFactor;
+        float upperThreshold = 0.75f * depthFactor;
+
+        if (cave < upperThreshold && cave > lowerThreshold)
+            return block.air;
+
+        return block.def;
     }
 
     public static void place_block(Vector3 wspos, block b) {

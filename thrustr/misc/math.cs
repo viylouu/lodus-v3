@@ -138,6 +138,8 @@ public class math {
     public static float log10(float a) => MathF.Log10(a);
     /// <summary>linearly interpolates between a and b at point t</summary>
     public static float lerp(float a, float b, float t) => float.Lerp(a, b, t);
+    /// <summary>linearly interpolates between a and b at point t</summary>
+    public static ColorF lerp(ColorF a, ColorF b, float t) => new(lerp(a.R,b.R,t),lerp(a.G,b.G,t),lerp(a.B,b.B,t),lerp(a.A,b.A,t));
     /// <summary>linearly interpolates between 2 angles (a and b) at point t</summary>
     public static float lerpang(float a, float b, float t) => Angle.Lerp(a, b, t);
     /// <summary>converts an angle (radians) to a vector2</summary>

@@ -1,5 +1,6 @@
+using System.ComponentModel;
 using System.Numerics;
-
+using SimulationFramework;
 using SimulationFramework.Drawing;
 using thrustr.utils;
 
@@ -24,6 +25,7 @@ public class game {
         frag.shading = shading;
         frag.atlas = blockatlas;
         frag.atlassize = atlassize;
+        frag.fogdist = global.chk_size*(renderdist/2);
     }
 
     public static void render_world(ICanvas c, IDepthMask depth) {
@@ -32,6 +34,8 @@ public class game {
         depth.Clear(1f);
 
         vert.vpmat = camera.vertprojmatrix;
+        frag.campos = camera.pos;
+        frag.fog = main.col;
 
         int render_dist = renderdist/2;
 
@@ -47,33 +51,34 @@ public class game {
 
         for(int x = minx; x < maxx; x++)
             for(int y = miny; y < maxy; y++)
-                for(int z = minz; z < maxz; z++) {
-                    if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk)) {
-                        chunking.gen_chunk(new(x,y,z));
-                        continue;
-                    } if(chk == null)
-                        continue;
-                    if(chk.m_inds.Length == 0)
-                        continue;
+                for(int z = minz; z < maxz; z++)
+                    if(math.sqrdist(camera.pos, new(x*global.chk_size,y*global.chk_size,z*global.chk_size)) < math.sqr(render_dist*global.chk_size)) {
+                        if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk)) {
+                            chunking.gen_chunk(new(x,y,z));
+                            continue;
+                        } if(chk == null)
+                            continue;
+                        if(chk.m_inds.Length == 0)
+                            continue;
 
-                    vert.wmat = Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size,z*global.chk_size);
+                        vert.wmat = Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size,z*global.chk_size);
 
-                    tris_rendered += chk.m_inds.Length/3;
-                    chunks_rendered++;
+                        tris_rendered += chk.m_inds.Length/3;
+                        chunks_rendered++;
 
-                    c.Fill(frag, vert);
-                    c.Mask(depth);
-                    c.WriteMask(depth, null);
-                    //c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
+                        c.Fill(frag, vert);
+                        c.Mask(depth);
+                        c.WriteMask(depth, null);
+                        //c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
 
-                    // temp fix for simf bug, but its only here bc chunking is async and most graphics class functions dont work async (its also easy to remove)
-                    if (chk.geom == null && chk.m_inds.Length > 0)
-                        chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);
-                    if (chk.geom != null)
-                        c.DrawGeometry(chk.geom);
+                        // temp fix for simf bug, but its only here bc chunking is async and most graphics class functions dont work async (its also easy to remove)
+                        if (chk.geom == null && chk.m_inds.Length > 0)
+                            chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);
+                        if (chk.geom != null)
+                            c.DrawGeometry(chk.geom);
 
-                    //c.Flush();
-                }
+                        //c.Flush();
+                    }
 
         c.ResetState();
     }

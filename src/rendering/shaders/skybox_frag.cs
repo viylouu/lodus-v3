@@ -8,12 +8,12 @@ public class skybox_frag : CanvasShader {
     [VertexShaderOutput]
     Vector3 frag_dir;
 
-    public ColorF upper_col;
-    public ColorF horizon;
-    public ColorF ground;
+    public ColorF col;
 
     public override ColorF GetPixelColor(Vector2 pos) {
-        Vector3 ray_dir = Normalize(frag_dir);
-        return new(ray_dir.X,ray_dir.Y,ray_dir.Z,1);
+        //Vector3 ray_dir = Normalize(frag_dir);
+        //return new(ray_dir.X,ray_dir.Y,ray_dir.Z,1);
+
+        return col;
     }
 }

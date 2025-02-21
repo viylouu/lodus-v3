@@ -4,8 +4,6 @@ using SimulationFramework;
 using SimulationFramework.Drawing;
 using SimulationFramework.Input;
 
-using ImGuiNET;
-
 using thrustr.basic;
 using thrustr.utils;
 
@@ -18,8 +16,16 @@ partial class main {
 
     static bool focus;
 
+    static ColorF skycol = ColorF.SkyBlue;
+    static ColorF caveskycol = new(4/255f,12/255f,24/255f);
+    public static ColorF col;
+
     static void rend(ICanvas c) {
         c.Clear(Color.Black);
+
+        col = math.lerp(caveskycol,skycol,math.clamp01((camera.pos.Y+32)/16));
+
+        sbfrag.col = col;
 
         rend_skybox(c);
 

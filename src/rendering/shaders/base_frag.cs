@@ -1,6 +1,7 @@
 using SimulationFramework.Drawing.Shaders;
 using SimulationFramework;
 using SimulationFramework.Drawing;
+using static SimulationFramework.Drawing.Shaders.ShaderIntrinsics;
 
 using System.Numerics;
 
@@ -8,10 +9,29 @@ public class base_frag : CanvasShader {
     [VertexShaderOutput]
     Vector2 uv;
 
+    [VertexShaderOutput]
+    Vector3 wspos;
+
     public ITexture atlas, shading;
     public Vector2 atlassize;
 
+    public ColorF fog;
+
+    public Vector3 campos;
+
+    public float fogdist;
+
+    public ColorF Mix(ColorF a, ColorF b, float t)
+        => new (Lerp(a.R,b.R,t),Lerp(a.G,b.G,t),Lerp(a.B,b.B,t),Lerp(a.A,b.A,t));
+
     public override ColorF GetPixelColor(Vector2 pos) {
-        return atlas.SampleUV(uv) * shading.SampleUV(uv*atlassize);
+        float dist = Distance(wspos,campos);
+        dist /= fogdist;
+        dist *= dist;
+
+        if(dist > 1)
+            Discard();
+
+        return Mix(atlas.SampleUV(uv) * shading.SampleUV(uv*atlassize), fog, dist);
     }
 }
