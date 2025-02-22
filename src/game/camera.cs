@@ -1,8 +1,7 @@
-using System.ComponentModel;
-using System.Net;
 using System.Numerics;
 
 using SimulationFramework;
+using SimulationFramework.Drawing;
 using SimulationFramework.Input;
 
 using thrustr.utils;
@@ -48,6 +47,8 @@ public class camera {
     static float maxvelsprint = 24f;
     static float maxvelalt = 64f;
 
+    public static Plane[] view_frustum;
+
     
     public static Matrix4x4 vertprojmatrix {
         get {
@@ -55,7 +56,15 @@ public class camera {
         }
     }
 
-    public static void update() {
+    public static void resize(int w, int h) {
+        firstmove = true;
+
+        last_window_size = new (w,h);
+
+        center = new (w/4,h/4);
+    }
+
+    public static void update(ICanvas c) {
         if(canmove) {
             float spd = Keyboard.IsKeyDown(Key.LeftAlt)? alt_speed : Keyboard.IsKeyDown(Key.LeftControl)? sprint_speed : speed;
 
@@ -103,9 +112,14 @@ public class camera {
             chunking.place_block(pos, block.rhyolite);
 
         if(canlook) {
-            if(global.fr_intercept.BaseWindowProvider.Size != last_window_size) {
+            if(global.pixelate && global.fr_intercept.BaseWindowProvider.Size != last_window_size) {
                 firstmove = true;
                 last_window_size = global.fr_intercept.BaseWindowProvider.Size;
+                center = global.fr_intercept.BaseWindowProvider.Size/4;
+            } else if(!global.pixelate && new Vector2(c.Width,c.Height) != last_window_size) {
+                firstmove = true;
+                last_window_size = new (c.Width,c.Height);
+                center = new (c.Width/4,c.Height/4);
             }
 
             if(firstmove) {
@@ -138,6 +152,8 @@ public class camera {
             right = math.norm(Vector3.Cross(front, Vector3.UnitY));
             up = math.norm(Vector3.Cross(right, front));
         }
+
+        view_frustum = frustum.GetFrustumPlanes(vertprojmatrix);
 
         Mouse.Visible = !canlook;
     }

@@ -1,5 +1,6 @@
 using SimulationFramework;
 
+
 public class global {
     public static FixedResolutionInterceptor fr_intercept = Application.GetComponent<FixedResolutionInterceptor>();
 
@@ -21,4 +22,13 @@ public class global {
 
     public static bool fog = true;
     public static float fog_density = 0.5f;
+
+    public static bool pixelate = true;
+
+
+    public static void window_resized(int w, int h) {
+        main.resize(w,h);
+        game.resize(w,h);
+        camera.resize(w,h);
+    }
 }

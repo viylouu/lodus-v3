@@ -1,6 +1,7 @@
 using System.Numerics;
-using Silk.NET.Windowing;
+
 using SimulationFramework.Drawing;
+using SimulationFramework;
 
 using thrustr.utils;
 
@@ -22,9 +23,18 @@ public class game {
     static post_frag post_process = new();
 
 
+    public static void resize(int w, int h) {
+        buffer.Dispose();
+        buffer = Graphics.CreateTexture(w,h);
+        buffer_c = buffer.GetCanvas();
+    }
+
     public static void load() {
         shading = Graphics.LoadTexture("assets/shading.png");
         blockatlas = Graphics.LoadTexture("assets/block atlas.png");
+
+        buffer = Graphics.CreateTexture(640,360);
+        buffer_c = buffer.GetCanvas();
 
         atlassize = new Vector2(blockatlas.Width/32,blockatlas.Height/48);
 
@@ -36,9 +46,7 @@ public class game {
     public static void render_world(ICanvas c, IDepthMask depth) {
         depth.Clear(1f);
 
-        buffer.trydispose();
-        buffer = Graphics.CreateTexture(c.Width,c.Height);
-        buffer_c = buffer.GetCanvas();
+        buffer_c.Clear(Color.Transparent);
 
         renderdist = global.render_dist;
 
@@ -58,7 +66,7 @@ public class game {
         tris_rendered = 0;
         chunks_rendered = 0;
 
-        Plane[] frustumPlanes = frustum.GetFrustumPlanes(camera.vertprojmatrix);
+        Vector3 min, max;
 
         for(long x = minx; x < maxx; x++)
             for(long y = miny; y < maxy; y++)
@@ -74,10 +82,10 @@ public class game {
                     if(chk.m_inds.Length == 0)
                         continue;
 
-                    Vector3 min = new(x*global.chk_size,y*global.chk_size,z*global.chk_size);
-                    Vector3 max = new(x*global.chk_size+global.chk_size,y*global.chk_size+global.chk_size,z*global.chk_size+global.chk_size);
+                    min = new(x*global.chk_size,y*global.chk_size,z*global.chk_size);
+                    max = new(x*global.chk_size+global.chk_size,y*global.chk_size+global.chk_size,z*global.chk_size+global.chk_size);
 
-                    if(!frustum.IsAABBInFrustum(min,max,frustumPlanes))
+                    if(!frustum.IsAABBInFrustum(min,max,camera.view_frustum))
                         continue;
                     
 
@@ -114,7 +122,7 @@ public class game {
         c.DrawRect(0,0,c.Width,c.Height);
     }
 
-    public static void update() {
-        camera.update();
+    public static void update(ICanvas c) {
+        camera.update(c);
     }
 }

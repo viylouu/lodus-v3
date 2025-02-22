@@ -20,5 +20,16 @@ partial class main {
         skybox = meshing.load_fbx("assets/skybox.fbx");
         sbfrag = new();
         sbvert = new();
+
+        windowsize = new(Window.Width,Window.Height);
+    }
+
+
+    public static void resize(int w, int h) {
+        if(global.pixelate)
+            Simulation.SetFixedResolution(w,h, Color.Black, false,true,false);
+
+        depth.Dispose();
+        depth = Graphics.CreateDepthMask(w,h);
     }
 }

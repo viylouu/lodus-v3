@@ -5,7 +5,6 @@ using SimulationFramework.Input;
 using thrustr.basic;
 
 using TextCopy;
-using System.Xml;
 
 
 public class terminal {
@@ -23,9 +22,9 @@ public class terminal {
     public static void render(ICanvas c) {
         if(enabled) {
             c.Fill(Color.Black); 
-            c.DrawRect(0,180,640,fontie.dfont.charh+2, Alignment.CenterLeft);
+            c.DrawRect(0,c.Height/2,c.Width,fontie.dfont.charh+2, Alignment.CenterLeft);
 
-            fontie.rendertext(c, cur + (show_pipe?"|":""), 3,180, Alignment.CenterLeft);
+            fontie.rendertext(c, cur + (show_pipe?"|":""), 3,c.Height/2, Alignment.CenterLeft);
 
             pipeing += Time.DeltaTime;
 

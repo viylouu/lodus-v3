@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
+
 using ImGuiNET;
+
 using SimulationFramework;
 using SimulationFramework.Drawing;
 using SimulationFramework.Input;
@@ -20,7 +22,21 @@ partial class main {
     static ColorF caveskycol = new(4/255f,12/255f,24/255f);
     public static ColorF col;
 
+    static Vector2 windowsize;
+
+    static int updatesize = 0;
+
     static void rend(ICanvas c) {
+        if(updatesize > 0) {
+            updatesize++;
+
+            if(updatesize > 1) {
+                global.window_resized(c.Width,c.Height);
+                updatesize = 0;
+                return;
+            }
+        }
+
         c.Clear(Color.Black);
 
         col = math.lerp(caveskycol,skycol,math.clamp01((camera.pos.Y+32)/16));
@@ -29,7 +45,7 @@ partial class main {
 
         rend_skybox(c);
 
-        game.update();
+        game.update(c);
 
         game.render_world(c, depth); 
 
@@ -47,6 +63,11 @@ partial class main {
         camera.canlook = focus && !terminal.enabled;
         camera.canmove = !terminal.enabled;
 
+        if(Window.Width != windowsize.X || Window.Height != windowsize.Y)
+            updatesize++;
+
+        windowsize = new(Window.Width,Window.Height);
+
         if(!focus) {
             ImGui.Begin("settings");
 
@@ -56,25 +77,35 @@ partial class main {
                 ImGui.SliderInt("sensitivity", ref global.sens, 1, 150);
             }
 
-            if(ImGui.CollapsingHeader("rendering")) {
-                if(ImGui.CollapsingHeader("misc")) {
-                    ImGui.SliderInt("render distance", ref global.render_dist, 2, 64);
+            if(ImGui.CollapsingHeader("post processing")) {
+                ImGui.Checkbox("color quantization", ref global.color_quant);
 
-                    ImGui.Checkbox("fog", ref global.fog);
+                if(global.color_quant) {
+                    ImGui.Checkbox("oklab quantization", ref global.better_quant);
 
-                    if(global.fog) {
-                        ImGui.SliderFloat("fog density", ref global.fog_density, 0.01f, 5f);
-                    }
+                    ImGui.SliderInt("quantization amount", ref global.color_quant_amt, 1, 48);
+                }
+            }
+
+            if(ImGui.CollapsingHeader("misc")) {
+                ImGui.SliderInt("render distance", ref global.render_dist, 2, 64);
+
+                ImGui.Checkbox("fog", ref global.fog);
+
+                if(global.fog) {
+                    ImGui.SliderFloat("fog density", ref global.fog_density, 0.01f, 5f);
                 }
 
-                if(ImGui.CollapsingHeader("post processing")) {
-                    ImGui.Checkbox("color quantization", ref global.color_quant);
+                bool pix = global.pixelate;
+                ImGui.Checkbox("pixelization", ref global.pixelate);
 
-                    if(global.color_quant) {
-                        ImGui.Checkbox("oklab quantization", ref global.better_quant);
+                if(pix != global.pixelate) {
+                    if(!global.pixelate)
+                        Simulation.SetFixedResolution(0,0, Color.Black);
+                    else
+                        Simulation.SetFixedResolution(640,360, Color.Black);
 
-                        ImGui.SliderInt("quantization amount", ref global.color_quant_amt, 1, 48);
-                    }
+                    updatesize++;
                 }
             }
 

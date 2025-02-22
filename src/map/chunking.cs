@@ -15,7 +15,7 @@ public class chunking {
 
     public static int seed;
 
-    public static ulong max_actions_before_wait = 64;
+    public static ulong max_actions_before_wait = 256;
     static ulong actions = 0;
 
     public static void load() {
@@ -70,12 +70,8 @@ public class chunking {
         dirtoff.SetSeed(seed);
     }
 
-    static SemaphoreSlim limiter = new(20);
-
-    public static async void gen_chunk(Vector3 pos) {
-        await limiter.WaitAsync();
-        try { await Task.Run(() => gen_chunk_thing(pos)); }
-        finally { limiter.Release(); }
+    public static void gen_chunk(Vector3 pos) {
+        gen_chunk_thing(pos);
     }
 
     public static async void gen_chunk_thing(Vector3 pos) {
@@ -95,10 +91,10 @@ public class chunking {
 
         await Task.Delay(1);
 
-        for(int x = 0; x < global.chk_size; x++)
+        /*for(int x = 0; x < global.chk_size; x++)
             for(int y = 0; y < global.chk_size; y++)
                 for(int z = 0; z < global.chk_size; z++) {
-                    block b = get_block_shaping(x+cx,y+cy,z+cz);
+                    //block b = get_block_shaping(x+cx,y+cy,z+cz);
                     c.data[x,y,z] = b;
 
                     if(b != block.air)
@@ -110,7 +106,19 @@ public class chunking {
                         actions = 0;
                         await Task.Delay(1);
                     }
-                }
+                }*/
+
+        Parallel.For(0, 16 * 16 * 16, index => {
+            int x = index / (16 * 16);
+            int y = (index / 16) % 16;
+            int z = index % 16;
+
+            block b = get_block_shaping(x+cx,y+cy,z+cz);
+            c.data[x,y,z] = b;
+
+            if(b != block.air)
+                        empty = false;
+        });
 
         global.chks_loaded++;
 
@@ -121,7 +129,7 @@ public class chunking {
 
         // generate more data
 
-        await Task.Delay(1);
+        await Task.Delay(10);
 
         for(int x = 0; x < global.chk_size; x++)
             for(int y = 0; y < global.chk_size; y++)
@@ -154,13 +162,13 @@ public class chunking {
 
                         if(actions > max_actions_before_wait) {
                             actions = 0;
-                            await Task.Delay(1);
+                            await Task.Delay(10);
                         }
                     }
 
         // generate mesh
         
-        await Task.Delay(1);
+        await Task.Delay(10);
 
         List<vertex> verts = new();
         List<uint> inds = new();
@@ -169,7 +177,7 @@ public class chunking {
 
         for (int x = 0; x < global.chk_size; x++)
             for (int y = 0; y < global.chk_size; y++)
-                for (int z = 0; z < global.chk_size; z++)
+                for(int z = 0; z < global.chk_size; z++)
                     if (c.data[x, y, z] != block.air)
                         // Iterate through the 6 possible faces of the current block
                         for (int i = 0; i < 6; i++) {
@@ -251,19 +259,19 @@ public class chunking {
                                 inds.Add(baseIndex);
                                 inds.Add(baseIndex + 2);
                                 inds.Add(baseIndex + 3);
-                            }
 
-                            actions++;
+                                actions++;
 
-                            if (actions > max_actions_before_wait) {
-                                actions = 0;
-                                await Task.Delay(1); // Prevent the frame from freezing
+                                if (actions > max_actions_before_wait) {
+                                    actions = 0;
+                                    await Task.Delay(10); // Prevent the frame from freezing
+                                }
                             }
                         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        await Task.Delay(1);
+        await Task.Delay(10);
 
         c.m_inds = inds.ToArray();
         c.m_verts = verts.ToArray(); 
