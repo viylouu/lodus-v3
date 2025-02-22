@@ -46,6 +46,7 @@ public class game {
         frag.campos = camera.pos;
         frag.fog = main.col;
         frag.fogdist = global.chk_size*renderdist;
+        frag.fogintensity = global.fog? global.fog_density : -1;
 
         long minx = (long)math.round(camera.pos.X/global.chk_size)-renderdist,
             miny = (long)math.round(camera.pos.Y/global.chk_size)-renderdist,

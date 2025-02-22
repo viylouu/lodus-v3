@@ -18,7 +18,7 @@ public class camera {
 
     public static float zoomsmooth = 6f;
 
-    public static Vector3 pos = new(0,24,0);
+    public static Vector3 pos = new(0,256,0);
     public static Vector3 vel;
 
     public static float pitch, yaw = -90f;

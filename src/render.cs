@@ -57,8 +57,14 @@ partial class main {
             }
 
             if(ImGui.CollapsingHeader("rendering")) {
-                if(ImGui.CollapsingHeader("performance")) {
+                if(ImGui.CollapsingHeader("misc")) {
                     ImGui.SliderInt("render distance", ref global.render_dist, 2, 64);
+
+                    ImGui.Checkbox("fog", ref global.fog);
+
+                    if(global.fog) {
+                        ImGui.SliderFloat("fog density", ref global.fog_density, 0.01f, 5f);
+                    }
                 }
 
                 if(ImGui.CollapsingHeader("post processing")) {

@@ -21,15 +21,21 @@ public class base_frag : CanvasShader {
 
     public float fogdist;
 
+    public float fogintensity;
+
     public float quant;
 
     public ColorF Mix(ColorF a, ColorF b, float t)
         => new (Lerp(a.R,b.R,t),Lerp(a.G,b.G,t),Lerp(a.B,b.B,t),Lerp(a.A,b.A,t));
 
     public override ColorF GetPixelColor(Vector2 pos) {
-        float dist = Distance(wspos,campos);
-        dist /= fogdist;
-        dist = Pow(dist,.65f);
+        float dist = 0;
+
+        if(fogintensity > 0) {
+            dist = Distance(wspos,campos);
+            dist /= fogdist;
+            dist = Pow(dist,fogintensity);
+        }
 
         if(dist > 1)
             Discard();

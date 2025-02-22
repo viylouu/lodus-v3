@@ -9,6 +9,7 @@ public class chunking {
     static FastNoiseLite bigcaves;
     static FastNoiseLite steeps;
     static FastNoiseLite stones;
+    static FastNoiseLite dirtoff;
 
     static Random r;
 
@@ -25,6 +26,7 @@ public class chunking {
         bigcaves = new();
         steeps = new();
         stones = new();
+        dirtoff = new();
 
         seed = r.Next(int.MinValue, int.MaxValue);
 
@@ -49,8 +51,8 @@ public class chunking {
         bigcaves.SetFractalType(FastNoiseLite.FractalType.FBm);
         bigcaves.SetFractalOctaves(5);
 
-        steeps.SetNoiseType(FastNoiseLite.NoiseType.Value);
-        steeps.SetFrequency(0.0025f);
+        steeps.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+        steeps.SetFrequency(0.0075f);
         steeps.SetSeed(seed);
         steeps.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2);
         steeps.SetDomainWarpAmp(126);
@@ -62,14 +64,24 @@ public class chunking {
         stones.SetFrequency(0.1f);
         stones.SetSeed(seed);
         stones.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
+
+        dirtoff.SetNoiseType(FastNoiseLite.NoiseType.Value);
+        dirtoff.SetFrequency(1);
+        dirtoff.SetSeed(seed);
     }
 
+    static SemaphoreSlim limiter = new(20);
 
     public static async void gen_chunk(Vector3 pos) {
+        await limiter.WaitAsync();
+        try { await Task.Run(() => gen_chunk_thing(pos)); }
+        finally { limiter.Release(); }
+    }
+
+    public static async void gen_chunk_thing(Vector3 pos) {
         chunk c = new();
 
-        lock(map.scene)
-            map.scene.Add(pos, null);
+        map.scene.TryAdd(pos, null);
 
         float cx = (int)pos.X*global.chk_size,
             cy = (int)pos.Y*global.chk_size,
@@ -118,7 +130,7 @@ public class chunking {
                         {
                             if(y+cy > get_noise_height(x+cx,z+cz)-1)
                                 c.data[x,y,z] = block.grass;
-                            else if(y+cy > get_noise_height(x+cx,z+cz)-6)
+                            else if(y+cy > get_noise_height(x+cx,z+cz)-4-dirtoff.GetNoise(x,z)*2)
                                 c.data[x,y,z] = block.dirt;
                             else {
                                 // stones
@@ -258,16 +270,22 @@ public class chunking {
 
         c.size = 0;
 
-        lock(map.scene)
-            map.scene[pos] = c;
+        map.scene[pos] = c;
     }
 
     static float get_noise_height(float x, float z) {
         float bass = height.GetNoise(x,z)*12;
-        float big = bigheight.GetNoise(x,z)*12 +12;
-        float steep = steeps.GetNoise(x,z)*64;
+        float big = bigheight.GetNoise(x,z)*72;
+        float xp = x, zp = z;
+        steeps.DomainWarp(ref xp,ref zp);
+        float steep = steeps.GetNoise(xp,zp)*16;
 
-        return bass + math.pow(big,1.65f) + steep +64;
+        //min is -12 - 16 = -76
+
+        if(big < -32)
+            return bass*0.25f - 32;
+
+        return bass + big + steep +64;
     }
 
     static block get_block_shaping(float x, float y, float z) {
@@ -275,7 +293,7 @@ public class chunking {
             return block.air;
 
         float cave = caves.GetNoise(x, y, z);
-        float depthFactor = 1.0f - (y/1024f);
+        float depthFactor = 1.0f - (y/512f);
         float lowerThreshold = 0.25f / depthFactor;
         float upperThreshold = 0.75f * depthFactor;
 

@@ -18,4 +18,7 @@ public class global {
     public static int sens = 25;
 
     public static int render_dist = 10;
+
+    public static bool fog = true;
+    public static float fog_density = 0.5f;
 }
