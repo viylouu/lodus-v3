@@ -47,14 +47,14 @@ public class math {
     public static Vector3 floor(Vector3 a) => new (MathF.Floor(a.X), MathF.Floor(a.Y), MathF.Floor(a.Z));
 
     /// <summary>rounds a number up if it's positive and down if it's negative</summary>
-    public static float nceil(float a) => a > 0? MathF.Ceiling(a) : MathF.Floor(a);
+    public static float nceil(float a) => a > 0? MathF.Ceiling(a) : MathF.Floor(a)-1;
     /// <summary>rounds a number up if it's positive and down if it's negative</summary>
     public static Vector2 nceil(Vector2 a) => new (nceil(a.X), nceil(a.Y));
     /// <summary>rounds a number up if it's positive and down if it's negative</summary>
     public static Vector3 nceil(Vector3 a) => new (nceil(a.X), nceil(a.Y), nceil(a.Z));
 
     /// <summary>rounds a number down if it's positive and up if it's negative</summary>
-    public static float nfloor(float a) => a > 0? MathF.Floor(a) : MathF.Ceiling(a);
+    public static float nfloor(float a) => a > 0? MathF.Floor(a) : MathF.Ceiling(a)-1;
     /// <summary>rounds a number down if it's positive and up if it's negative</summary>
     public static Vector2 nfloor(Vector2 a) => new (nfloor(a.X), nfloor(a.Y));
     /// <summary>rounds a number down if it's positive and up if it's negative</summary>

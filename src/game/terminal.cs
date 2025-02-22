@@ -38,7 +38,7 @@ public class terminal {
         }
 
         if(Keyboard.IsKeyPressed(Key.Enter)) {
-            if(enabled && cur[0] == command_char)
+            if(enabled && cur.Length > 0 && cur[0] == command_char)
                 do_commands();
 
             enabled = !enabled;

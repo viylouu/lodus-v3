@@ -91,27 +91,13 @@ public class camera {
             }
         }
 
+        deffov = global.fov;
+        sens = global.sens*500;
+
         fov += ease.dyn(fov, (canmove && Keyboard.IsKeyDown(Key.C))? zoomfov : deffov, zoomsmooth);
-        fov = math.clamp(fov, 1,deffov);
+        fov = math.clamp(fov, 1,170);
 
-        //vel.Y -= gravity * Time.DeltaTime;
         pos += vel * Time.DeltaTime;
-
-        /*int wx = (int)math.floor(pos.X/global.chk_size),
-            wy = (int)math.floor((pos.Y-2)/global.chk_size),
-            wz = (int)math.floor(pos.Z/global.chk_size);
-
-        if(map.scene.TryGetValue(new(wx,wy,wz), out chunk? chk))
-            if(chk != null) 
-                if(chk.data != null) 
-                    for(int x = 0; x < global.chk_size; x++)
-                        for(int y = 0; y < global.chk_size; y++)
-                            for(int z = 0; z < global.chk_size; z++)
-                                if(chk.data[x,y,z] != block.air)
-                                    if(pos.Y < y+wy*global.chk_size+1.75f) {
-                                        pos.Y = y+wy*global.chk_size+1.75f;
-                                        vel.Y = 0;
-                                    }*/
 
         if(canmove && Keyboard.IsKeyPressed(Key.P))
             chunking.place_block(pos, block.rhyolite);

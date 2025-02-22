@@ -8,6 +8,7 @@ public class chunking {
     static FastNoiseLite caves;
     static FastNoiseLite bigcaves;
     static FastNoiseLite steeps;
+    static FastNoiseLite stones;
 
     static Random r;
 
@@ -23,6 +24,7 @@ public class chunking {
         caves = new();
         bigcaves = new();
         steeps = new();
+        stones = new();
 
         seed = r.Next(int.MinValue, int.MaxValue);
 
@@ -55,6 +57,11 @@ public class chunking {
         steeps.SetFractalType(FastNoiseLite.FractalType.DomainWarpProgressive);
         steeps.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
         steeps.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
+
+        stones.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
+        stones.SetFrequency(0.1f);
+        stones.SetSeed(seed);
+        stones.SetCellularReturnType(FastNoiseLite.CellularReturnType.CellValue);
     }
 
 
@@ -98,6 +105,8 @@ public class chunking {
         if(empty)
             return;
 
+        global.filled_chks_loaded++;
+
         // generate more data
 
         await Task.Delay(1);
@@ -114,7 +123,18 @@ public class chunking {
                             else {
                                 // stones
 
-                                c.data[x,y,z] = block.generic_stone;
+                                int type = (int)math.round(stones.GetNoise(x+cx,y+cy,z+cz)*3);
+
+                                switch(type) {
+                                    case 0:
+                                        c.data[x,y,z] = block.shale; break;
+                                    case 1:
+                                        c.data[x,y,z] = block.andesite; break;
+                                    case 2:
+                                        c.data[x,y,z] = block.shale_bricks; break;
+                                    case 3:
+                                        c.data[x,y,z] = block.andesite_bricks; break;
+                                }
                             }
                         }
 
@@ -138,45 +158,75 @@ public class chunking {
         for (int x = 0; x < global.chk_size; x++)
             for (int y = 0; y < global.chk_size; y++)
                 for (int z = 0; z < global.chk_size; z++)
-                    if(c.data[x,y,z] != block.air)
+                    if (c.data[x, y, z] != block.air)
+                        // Iterate through the 6 possible faces of the current block
                         for (int i = 0; i < 6; i++) {
-                            // Determine if the face should be rendered
                             bool shouldRenderFace = false;
 
                             switch (i) {
                                 case 0: // +x face
-                                    if (x == global.chk_size - 1 && get_block_shaping(x+1+cx,y+cy,z+cz) == block.air) shouldRenderFace = true;
-                                    if(x != global.chk_size - 1 && c.data[x + 1, y, z] == block.air) shouldRenderFace = true;
+                                    if (x == global.chk_size - 1 && get_block_shaping(x + 1 + cx, y + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (x != global.chk_size - 1 && c.data[x + 1, y, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 1: // -x face
-                                    if (x == 0 && get_block_shaping(x-1+cx,y+cy,z+cz) == block.air) shouldRenderFace = true;
-                                    if(x != 0 && c.data[x - 1, y, z] == block.air) shouldRenderFace = true;
+                                    if (x == 0 && get_block_shaping(x - 1 + cx, y + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (x != 0 && c.data[x - 1, y, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 2: // +y face
-                                    if (y == global.chk_size - 1 && get_block_shaping(x+cx,y+1+cy,z+cz) == block.air) shouldRenderFace = true; 
-                                    if(y != global.chk_size - 1 && c.data[x, y + 1, z] == block.air) shouldRenderFace = true;
+                                    if (y == global.chk_size - 1 && get_block_shaping(x + cx, y + 1 + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (y != global.chk_size - 1 && c.data[x, y + 1, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 3: // -y face
-                                    if (y == 0 && get_block_shaping(x+cx,y-1+cy,z+cz) == block.air) shouldRenderFace = true; 
-                                    if(y != 0 && c.data[x, y - 1, z] == block.air) shouldRenderFace = true;
+                                    if (y == 0 && get_block_shaping(x + cx, y - 1 + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (y != 0 && c.data[x, y - 1, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 4: // +z face
-                                    if (z == global.chk_size - 1 && get_block_shaping(x+cx,y+cy,z+1+cz) == block.air) shouldRenderFace = true; 
-                                    if(z != global.chk_size - 1 && c.data[x, y, z + 1] == block.air) shouldRenderFace = true;
+                                    if (z == global.chk_size - 1 && get_block_shaping(x + cx, y + cy, z + 1 + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (z != global.chk_size - 1 && c.data[x, y, z + 1] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 5: // -z face
-                                    if (z == 0 && get_block_shaping(x+cx,y+cy,z-1+cz) == block.air) shouldRenderFace = true; 
-                                    if(z != 0 && c.data[x, y, z - 1] == block.air) shouldRenderFace = true;
+                                    if (z == 0 && get_block_shaping(x + cx, y + cy, z - 1 + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (z != 0 && c.data[x, y, z - 1] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                             }
 
                             if (shouldRenderFace) {
+                                // Check if the current face can be merged with adjacent blocks (greedy meshing)
+                                bool canMerge = false;
+                                if (i == 0 && x < global.chk_size - 1 && c.data[x + 1, y, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with +x face
+                                else if (i == 1 && x > 0 && c.data[x - 1, y, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with -x face
+                                else if (i == 2 && y < global.chk_size - 1 && c.data[x, y + 1, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with +y face
+                                else if (i == 3 && y > 0 && c.data[x, y - 1, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with -y face
+                                else if (i == 4 && z < global.chk_size - 1 && c.data[x, y, z + 1] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with +z face
+                                else if (i == 5 && z > 0 && c.data[x, y, z - 1] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with -z face
+
+                                // If merging, skip adding the face and move on to the next block
+                                if (canMerge) continue;
+
                                 // Add the vertices for this face
                                 for (int v = 0; v < 4; v++) {
                                     vertex vtx = cube.f_verts[i, v];
                                     vtx.pos += new Vector3(x, y, z); // Translate position based on the chunk's coordinates
                                     vtx.uv /= game.atlassize;
-                                    vtx.uv.X += (c.data[x,y,z].index-1) / game.atlassize.X;
+                                    vtx.uv.X += (c.data[x, y, z].index - 1) / game.atlassize.X;
                                     verts.Add(vtx); // Add the vertex to the list
                                 }
 
@@ -193,9 +243,9 @@ public class chunking {
 
                             actions++;
 
-                            if(actions > max_actions_before_wait) {
+                            if (actions > max_actions_before_wait) {
                                 actions = 0;
-                                await Task.Delay(1);
+                                await Task.Delay(1); // Prevent the frame from freezing
                             }
                         }
 
@@ -279,50 +329,78 @@ public class chunking {
         List<vertex> verts = new();
         List<uint> inds = new();
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         for (int x = 0; x < global.chk_size; x++)
             for (int y = 0; y < global.chk_size; y++)
                 for (int z = 0; z < global.chk_size; z++)
-                    if(c.data[x,y,z] != block.air)
+                    if (c.data[x, y, z] != block.air)
+                        // Iterate through the 6 possible faces of the current block
                         for (int i = 0; i < 6; i++) {
-                            // Determine if the face should be rendered
                             bool shouldRenderFace = false;
 
                             switch (i) {
                                 case 0: // +x face
-                                    if (x == global.chk_size - 1 && get_block_shaping(x+1+cx,y+cy,z+cz) == block.air) shouldRenderFace = true;
-                                    if(x != global.chk_size - 1 && c.data[x + 1, y, z] == block.air) shouldRenderFace = true;
+                                    if (x == global.chk_size - 1 && get_block_shaping(x + 1 + cx, y + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (x != global.chk_size - 1 && c.data[x + 1, y, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 1: // -x face
-                                    if (x == 0 && get_block_shaping(x-1+cx,y+cy,z+cz) == block.air) shouldRenderFace = true;
-                                    if(x != 0 && c.data[x - 1, y, z] == block.air) shouldRenderFace = true;
+                                    if (x == 0 && get_block_shaping(x - 1 + cx, y + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (x != 0 && c.data[x - 1, y, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 2: // +y face
-                                    if (y == global.chk_size - 1 && get_block_shaping(x+cx,y+1+cy,z+cz) == block.air) shouldRenderFace = true; 
-                                    if(y != global.chk_size - 1 && c.data[x, y + 1, z] == block.air) shouldRenderFace = true;
+                                    if (y == global.chk_size - 1 && get_block_shaping(x + cx, y + 1 + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (y != global.chk_size - 1 && c.data[x, y + 1, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 3: // -y face
-                                    if (y == 0 && get_block_shaping(x+cx,y-1+cy,z+cz) == block.air) shouldRenderFace = true; 
-                                    if(y != 0 && c.data[x, y - 1, z] == block.air) shouldRenderFace = true;
+                                    if (y == 0 && get_block_shaping(x + cx, y - 1 + cy, z + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (y != 0 && c.data[x, y - 1, z] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 4: // +z face
-                                    if (z == global.chk_size - 1 && get_block_shaping(x+cx,y+cy,z+1+cz) == block.air) shouldRenderFace = true; 
-                                    if(z != global.chk_size - 1 && c.data[x, y, z + 1] == block.air) shouldRenderFace = true;
+                                    if (z == global.chk_size - 1 && get_block_shaping(x + cx, y + cy, z + 1 + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (z != global.chk_size - 1 && c.data[x, y, z + 1] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                                 case 5: // -z face
-                                    if (z == 0 && get_block_shaping(x+cx,y+cy,z-1+cz) == block.air) shouldRenderFace = true; 
-                                    if(z != 0 && c.data[x, y, z - 1] == block.air) shouldRenderFace = true;
+                                    if (z == 0 && get_block_shaping(x + cx, y + cy, z - 1 + cz) == block.air) 
+                                        shouldRenderFace = true;
+                                    if (z != 0 && c.data[x, y, z - 1] == block.air) 
+                                        shouldRenderFace = true;
                                     break;
                             }
 
                             if (shouldRenderFace) {
+                                // Check if the current face can be merged with adjacent blocks (greedy meshing)
+                                bool canMerge = false;
+                                if (i == 0 && x < global.chk_size - 1 && c.data[x + 1, y, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with +x face
+                                else if (i == 1 && x > 0 && c.data[x - 1, y, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with -x face
+                                else if (i == 2 && y < global.chk_size - 1 && c.data[x, y + 1, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with +y face
+                                else if (i == 3 && y > 0 && c.data[x, y - 1, z] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with -y face
+                                else if (i == 4 && z < global.chk_size - 1 && c.data[x, y, z + 1] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with +z face
+                                else if (i == 5 && z > 0 && c.data[x, y, z - 1] == c.data[x, y, z]) 
+                                    canMerge = true; // Merge with -z face
+
+                                // If merging, skip adding the face and move on to the next block
+                                if (canMerge) continue;
+
                                 // Add the vertices for this face
                                 for (int v = 0; v < 4; v++) {
                                     vertex vtx = cube.f_verts[i, v];
                                     vtx.pos += new Vector3(x, y, z); // Translate position based on the chunk's coordinates
                                     vtx.uv /= game.atlassize;
-                                    vtx.uv.X += (c.data[x,y,z].index-1) / game.atlassize.X;
+                                    vtx.uv.X += (c.data[x, y, z].index - 1) / game.atlassize.X;
                                     verts.Add(vtx); // Add the vertex to the list
                                 }
 

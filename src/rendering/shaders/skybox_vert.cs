@@ -1,4 +1,3 @@
-using SimulationFramework;
 using SimulationFramework.Drawing.Shaders;
 
 using System.Numerics;
