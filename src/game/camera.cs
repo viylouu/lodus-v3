@@ -82,18 +82,23 @@ public class camera {
                 pos.Y -= spd * Time.DeltaTime * 0.35f;
         }
 
-        if(vel.X != 0 || vel.Z != 0) {
-            if((!Keyboard.IsKeyDown(Key.W) && !Keyboard.IsKeyDown(Key.S) && !Keyboard.IsKeyDown(Key.A) && !Keyboard.IsKeyDown(Key.D)) || !canmove) {
-                Vector2 horizdec = math.norm(new Vector2(vel.X,vel.Z))*deccel*Time.DeltaTime;
+        if (vel.X != 0 || vel.Z != 0) {
+            if ((!Keyboard.IsKeyDown(Key.W) && !Keyboard.IsKeyDown(Key.S) && !Keyboard.IsKeyDown(Key.A) && !Keyboard.IsKeyDown(Key.D)) || !canmove) {
+                Vector2 horizdec = math.norm(new Vector2(vel.X, vel.Z)) * deccel * Time.DeltaTime;
 
-                vel.X -= horizdec.X;
-                vel.Z -= horizdec.Y;
+                if (new Vector2(vel.X, vel.Z).Length() > horizdec.Length()) {
+                    vel.X -= horizdec.X;
+                    vel.Z -= horizdec.Y;
+                } else {
+                    vel.X = 0;
+                    vel.Z = 0;
+                }
             }
 
-            float mv = Keyboard.IsKeyDown(Key.LeftAlt)? maxvelalt : Keyboard.IsKeyDown(Key.LeftControl)? maxvelsprint : maxvel;
+            float mv = Keyboard.IsKeyDown(Key.LeftAlt) ? maxvelalt : Keyboard.IsKeyDown(Key.LeftControl) ? maxvelsprint : maxvel;
 
-            if(new Vector2(vel.X,vel.Z).Length() > mv) {
-                Vector2 horiz = math.norm(new Vector2(vel.X,vel.Z));
+            if (new Vector2(vel.X, vel.Z).Length() > mv) {
+                Vector2 horiz = math.norm(new Vector2(vel.X, vel.Z));
 
                 vel.X = horiz.X * mv;
                 vel.Z = horiz.Y * mv;

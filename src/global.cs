@@ -4,7 +4,7 @@ using SimulationFramework;
 public class global {
     public static FixedResolutionInterceptor fr_intercept = Application.GetComponent<FixedResolutionInterceptor>();
 
-    public const byte chk_size = 16;
+    public const byte chk_size = 8;
     public static long chks_loaded = 0;
     public static long filled_chks_loaded = 0;
 

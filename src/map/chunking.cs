@@ -91,10 +91,10 @@ public class chunking {
 
         await Task.Delay(1);
 
-        /*for(int x = 0; x < global.chk_size; x++)
+        for(int x = 0; x < global.chk_size; x++)
             for(int y = 0; y < global.chk_size; y++)
                 for(int z = 0; z < global.chk_size; z++) {
-                    //block b = get_block_shaping(x+cx,y+cy,z+cz);
+                    block b = get_block_shaping(x+cx,y+cy,z+cz);
                     c.data[x,y,z] = b;
 
                     if(b != block.air)
@@ -106,9 +106,9 @@ public class chunking {
                         actions = 0;
                         await Task.Delay(1);
                     }
-                }*/
+                }
 
-        Parallel.For(0, 16 * 16 * 16, index => {
+        /*Parallel.For(0, 16 * 16 * 16, index => {
             int x = index / (16 * 16);
             int y = (index / 16) % 16;
             int z = index % 16;
@@ -118,7 +118,7 @@ public class chunking {
 
             if(b != block.air)
                         empty = false;
-        });
+        });*/
 
         global.chks_loaded++;
 
