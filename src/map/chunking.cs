@@ -1,4 +1,7 @@
 using System.Numerics;
+using System.Collections.Concurrent;
+
+using SimulationFramework;
 
 using thrustr.utils;
 
@@ -15,8 +18,12 @@ public class chunking {
 
     public static int seed;
 
-    public static ulong max_actions_before_wait = 256;
-    static ulong actions = 0;
+    static ConcurrentDictionary<Vector3, float> generatedBlockShapes = new();
+    static int blockShapeSamples = 32/8;
+
+    static ConcurrentDictionary<Vector2, float> generatedBlockHeights = new();
+    static int blockHeightSamples = 32/8;
+
 
     public static void load() {
         r = new();
@@ -70,18 +77,12 @@ public class chunking {
         dirtoff.SetSeed(seed);
     }
 
-    public static void gen_chunk(Vector3 pos) {
-        gen_chunk_thing(pos);
-    }
-
-    public static async void gen_chunk_thing(Vector3 pos) {
+    public static void gen_chunk_thing(Vector3 pos) {
         chunk c = new();
 
-        map.scene.TryAdd(pos, null);
-
         float cx = (int)pos.X*global.chk_size,
-            cy = (int)pos.Y*global.chk_size,
-            cz = (int)pos.Z*global.chk_size;
+              cy = (int)pos.Y*global.chk_size,
+              cz = (int)pos.Z*global.chk_size;
 
         bool empty = true;
 
@@ -89,36 +90,45 @@ public class chunking {
 
         // generate data
 
-        await Task.Delay(1);
-
         for(int x = 0; x < global.chk_size; x++)
             for(int y = 0; y < global.chk_size; y++)
                 for(int z = 0; z < global.chk_size; z++) {
+                    //////////////////////////////////////////////////////////////
+
                     block b = get_block_shaping(x+cx,y+cy,z+cz);
                     c.data[x,y,z] = b;
 
                     if(b != block.air)
                         empty = false;
 
-                    actions++;
+                    //////////////////////////////////////////////////////////////
 
-                    if(actions > max_actions_before_wait) {
-                        actions = 0;
-                        await Task.Delay(1);
+                    if(b == block.def) {
+                        float nh = get_noise_height(x+cx,z+cz);
+                        if(y+cy > nh-1)
+                            c.data[x,y,z] = block.grass;
+                        else if(y+cy > nh-4-dirtoff.GetNoise(x,z)*2)
+                            c.data[x,y,z] = block.dirt;
+                        else {
+                            // stones
+
+                            int type = (int)math.round(stones.GetNoise(x+cx,y+cy,z+cz)*3);
+
+                            switch(type) {
+                                case 0:
+                                    c.data[x,y,z] = block.shale; break;
+                                case 1:
+                                    c.data[x,y,z] = block.andesite; break;
+                                case 2:
+                                    c.data[x,y,z] = block.shale_bricks; break;
+                                case 3:
+                                    c.data[x,y,z] = block.andesite_bricks; break;
+                            }
+                        }
                     }
+
+                    //////////////////////////////////////////////////////////////
                 }
-
-        /*Parallel.For(0, 16 * 16 * 16, index => {
-            int x = index / (16 * 16);
-            int y = (index / 16) % 16;
-            int z = index % 16;
-
-            block b = get_block_shaping(x+cx,y+cy,z+cz);
-            c.data[x,y,z] = b;
-
-            if(b != block.air)
-                        empty = false;
-        });*/
 
         global.chks_loaded++;
 
@@ -129,178 +139,106 @@ public class chunking {
 
         // generate more data
 
-        await Task.Delay(10);
-
         for(int x = 0; x < global.chk_size; x++)
             for(int y = 0; y < global.chk_size; y++)
                 for(int z = 0; z < global.chk_size; z++)
                     if(c.data[x,y,z] == block.def) {
-                        {
-                            if(y+cy > get_noise_height(x+cx,z+cz)-1)
-                                c.data[x,y,z] = block.grass;
-                            else if(y+cy > get_noise_height(x+cx,z+cz)-4-dirtoff.GetNoise(x,z)*2)
-                                c.data[x,y,z] = block.dirt;
-                            else {
-                                // stones
+                        float nh = get_noise_height(x+cx,z+cz);
+                        if(y+cy > nh-1)
+                            c.data[x,y,z] = block.grass;
+                        else if(y+cy > nh-4-dirtoff.GetNoise(x,z)*2)
+                            c.data[x,y,z] = block.dirt;
+                        else {
+                            // stones
 
-                                int type = (int)math.round(stones.GetNoise(x+cx,y+cy,z+cz)*3);
+                            int type = (int)math.round(stones.GetNoise(x+cx,y+cy,z+cz)*3);
 
-                                switch(type) {
-                                    case 0:
-                                        c.data[x,y,z] = block.shale; break;
-                                    case 1:
-                                        c.data[x,y,z] = block.andesite; break;
-                                    case 2:
-                                        c.data[x,y,z] = block.shale_bricks; break;
-                                    case 3:
-                                        c.data[x,y,z] = block.andesite_bricks; break;
-                                }
+                            switch(type) {
+                                case 0:
+                                    c.data[x,y,z] = block.shale; break;
+                                case 1:
+                                    c.data[x,y,z] = block.andesite; break;
+                                case 2:
+                                    c.data[x,y,z] = block.shale_bricks; break;
+                                case 3:
+                                    c.data[x,y,z] = block.andesite_bricks; break;
                             }
-                        }
-
-                        actions++;
-
-                        if(actions > max_actions_before_wait) {
-                            actions = 0;
-                            await Task.Delay(10);
                         }
                     }
 
-        // generate mesh
-        
-        await Task.Delay(10);
+        (List<vertex> vertices, List<uint> indices) = generate_mesh(c,pos);
 
-        List<vertex> verts = new();
-        List<uint> inds = new();
+        c.m_inds = indices.ToArray();
+        c.m_verts = vertices.ToArray();
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        for (int x = 0; x < global.chk_size; x++)
-            for (int y = 0; y < global.chk_size; y++)
-                for(int z = 0; z < global.chk_size; z++)
-                    if (c.data[x, y, z] != block.air)
-                        // Iterate through the 6 possible faces of the current block
-                        for (int i = 0; i < 6; i++) {
-                            bool shouldRenderFace = false;
-
-                            switch (i) {
-                                case 0: // +x face
-                                    if (x == global.chk_size - 1 && get_block_shaping(x + 1 + cx, y + cy, z + cz) == block.air) 
-                                        shouldRenderFace = true;
-                                    if (x != global.chk_size - 1 && c.data[x + 1, y, z] == block.air) 
-                                        shouldRenderFace = true;
-                                    break;
-                                case 1: // -x face
-                                    if (x == 0 && get_block_shaping(x - 1 + cx, y + cy, z + cz) == block.air) 
-                                        shouldRenderFace = true;
-                                    if (x != 0 && c.data[x - 1, y, z] == block.air) 
-                                        shouldRenderFace = true;
-                                    break;
-                                case 2: // +y face
-                                    if (y == global.chk_size - 1 && get_block_shaping(x + cx, y + 1 + cy, z + cz) == block.air) 
-                                        shouldRenderFace = true;
-                                    if (y != global.chk_size - 1 && c.data[x, y + 1, z] == block.air) 
-                                        shouldRenderFace = true;
-                                    break;
-                                case 3: // -y face
-                                    if (y == 0 && get_block_shaping(x + cx, y - 1 + cy, z + cz) == block.air) 
-                                        shouldRenderFace = true;
-                                    if (y != 0 && c.data[x, y - 1, z] == block.air) 
-                                        shouldRenderFace = true;
-                                    break;
-                                case 4: // +z face
-                                    if (z == global.chk_size - 1 && get_block_shaping(x + cx, y + cy, z + 1 + cz) == block.air) 
-                                        shouldRenderFace = true;
-                                    if (z != global.chk_size - 1 && c.data[x, y, z + 1] == block.air) 
-                                        shouldRenderFace = true;
-                                    break;
-                                case 5: // -z face
-                                    if (z == 0 && get_block_shaping(x + cx, y + cy, z - 1 + cz) == block.air) 
-                                        shouldRenderFace = true;
-                                    if (z != 0 && c.data[x, y, z - 1] == block.air) 
-                                        shouldRenderFace = true;
-                                    break;
-                            }
-
-                            if (shouldRenderFace) {
-                                // Check if the current face can be merged with adjacent blocks (greedy meshing)
-                                bool canMerge = false;
-                                if (i == 0 && x < global.chk_size - 1 && c.data[x + 1, y, z] == c.data[x, y, z]) 
-                                    canMerge = true; // Merge with +x face
-                                else if (i == 1 && x > 0 && c.data[x - 1, y, z] == c.data[x, y, z]) 
-                                    canMerge = true; // Merge with -x face
-                                else if (i == 2 && y < global.chk_size - 1 && c.data[x, y + 1, z] == c.data[x, y, z]) 
-                                    canMerge = true; // Merge with +y face
-                                else if (i == 3 && y > 0 && c.data[x, y - 1, z] == c.data[x, y, z]) 
-                                    canMerge = true; // Merge with -y face
-                                else if (i == 4 && z < global.chk_size - 1 && c.data[x, y, z + 1] == c.data[x, y, z]) 
-                                    canMerge = true; // Merge with +z face
-                                else if (i == 5 && z > 0 && c.data[x, y, z - 1] == c.data[x, y, z]) 
-                                    canMerge = true; // Merge with -z face
-
-                                // If merging, skip adding the face and move on to the next block
-                                if (canMerge) continue;
-
-                                // Add the vertices for this face
-                                for (int v = 0; v < 4; v++) {
-                                    vertex vtx = cube.f_verts[i, v];
-                                    vtx.pos += new Vector3(x, y, z); // Translate position based on the chunk's coordinates
-                                    vtx.uv /= game.atlassize;
-                                    vtx.uv.X += (c.data[x, y, z].index - 1) / game.atlassize.X;
-                                    verts.Add(vtx); // Add the vertex to the list
-                                }
-
-                                // Indices for drawing the face (two triangles per face)
-                                uint baseIndex = (uint)(verts.Count - 4);
-                                inds.Add(baseIndex);
-                                inds.Add(baseIndex + 1);
-                                inds.Add(baseIndex + 2);
-
-                                inds.Add(baseIndex);
-                                inds.Add(baseIndex + 2);
-                                inds.Add(baseIndex + 3);
-
-                                actions++;
-
-                                if (actions > max_actions_before_wait) {
-                                    actions = 0;
-                                    await Task.Delay(10); // Prevent the frame from freezing
-                                }
-                            }
-                        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        await Task.Delay(10);
-
-        c.m_inds = inds.ToArray();
-        c.m_verts = verts.ToArray(); 
-
-        c.size = 0;
+        c.starttime = Time.TotalTime;
 
         map.scene[pos] = c;
     }
 
-    static float get_noise_height(float x, float z) {
-        float bass = height.GetNoise(x,z)*12;
-        float big = bigheight.GetNoise(x,z)*72;
-        float xp = x, zp = z;
+    static float smoothstep(float t)
+        => t * t * (3 - 2 * t);
+
+    public static float get_real_height_at(Vector2 pos) {
+        float bass = height.GetNoise(pos.X,pos.Y)*12;
+        float big = bigheight.GetNoise(pos.X,pos.Y)*72;
+        float xp = pos.X, zp = pos.Y;
         steeps.DomainWarp(ref xp,ref zp);
         float steep = steeps.GetNoise(xp,zp)*16;
 
-        //min is -12 - 16 = -76
-
-        if(big < -32)
-            return bass*0.25f - 32;
-
         return bass + big + steep +64;
+    }
+
+    public static float get_noise_height(float x, float z) {
+        int sample1X = (int)math.floor(x/blockHeightSamples)*blockHeightSamples;
+        int sample1Z = (int)math.floor(z/blockHeightSamples)*blockHeightSamples;
+        int sample2X = sample1X + blockHeightSamples;
+        int sample2Z = sample1Z + blockHeightSamples;
+
+        if (sample1X == sample2X) sample2X += 1;
+        if (sample1Z == sample2Z) sample2Z += 1;
+
+        Vector2 pAA = new(sample1X,sample1Z);
+        Vector2 pAB = new(sample1X,sample2Z);
+        Vector2 pBA = new(sample2X,sample1Z);
+        Vector2 pBB = new(sample2X,sample2Z);
+        
+        if(!generatedBlockHeights.TryGetValue(pAA, out float AA)) {
+            generatedBlockHeights.TryAdd(pAA, get_real_height_at(pAA));
+            AA = generatedBlockHeights[pAA];
+            if(x == sample1X && z == sample1Z)
+                return AA;
+        }
+        if(!generatedBlockHeights.TryGetValue(pBA, out float BA)) {
+            generatedBlockHeights.TryAdd(pBA, get_real_height_at(pBA));
+            BA = generatedBlockHeights[pBA];
+            if(x == sample2X && z == sample1Z)
+                return BA;
+        }
+        if(!generatedBlockHeights.TryGetValue(pAB, out float AB)) {
+            generatedBlockHeights.TryAdd(pAB, get_real_height_at(pAB));
+            AB = generatedBlockHeights[pAB];
+            if(x == sample1X && z == sample2Z)
+                return AB;
+        }
+        if(!generatedBlockHeights.TryGetValue(pBB, out float BB)) {
+            generatedBlockHeights.TryAdd(pBB, get_real_height_at(pBB));
+            BB = generatedBlockHeights[pBB];
+            if(x == sample2X && z == sample2Z)
+                return BB;
+        }
+
+        float diffx = smoothstep((x-sample1X)/blockHeightSamples);
+        float diffz = smoothstep((z-sample1Z)/blockHeightSamples);
+
+        return math.lerp(math.lerp(AA,BA,diffx),math.lerp(AB,BB,diffx),diffz);
     }
 
     static block get_block_shaping(float x, float y, float z) {
         if(y > get_noise_height(x,z))
             return block.air;
 
-        float cave = caves.GetNoise(x, y, z);
+        float cave = caves.GetNoise(x,y,z);
         float depthFactor = 1.0f - (y/512f);
         float lowerThreshold = 0.25f / depthFactor;
         float upperThreshold = 0.75f * depthFactor;
@@ -334,12 +272,12 @@ public class chunking {
 
         //map.scene[pos] = c;
 
-        regenerate_mesh(pos);
+        generate_mesh(pos);
 
         Console.WriteLine($"placed block in chunk ({pos.X}, {pos.Y}, {pos.Z})");
     }
 
-    public static void regenerate_mesh(Vector3 pos) {
+    public static void generate_mesh(Vector3 pos) {
         map.scene.TryGetValue(pos, out chunk? c);
 
         if(c == null)
@@ -348,6 +286,15 @@ public class chunking {
         if(c.data == null)
             return;
 
+        (List<vertex> vertices, List<uint> indices) = generate_mesh(c,pos);
+
+        c.m_inds = indices.ToArray();
+        c.m_verts = vertices.ToArray();
+
+        map.scene[pos] = c;
+    }
+
+    public static (List<vertex>, List<uint>) generate_mesh(chunk c, Vector3 pos) {
         int cx = (int)pos.X*global.chk_size,
             cy = (int)pos.Y*global.chk_size,
             cz = (int)pos.Z*global.chk_size;
@@ -442,10 +389,7 @@ public class chunking {
                             }
                         }
 
-        c.m_inds = inds.ToArray();
-        c.m_verts = verts.ToArray();
-
-        map.scene[pos] = c;
+        return (verts,inds);
     }
 
     public static (Vector3 pos, Vector3 cpos) from_worldspace(Vector3 wspos) {

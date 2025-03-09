@@ -8,5 +8,5 @@ public class chunk {
 
     public IGeometry? geom;
 
-    public float size;
+    public float starttime;
 }

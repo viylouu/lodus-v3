@@ -22,6 +22,8 @@ public class game {
 
     static post_frag post_process = new();
 
+    static List<Vector3> chunksToGenerate = new();
+
 
     public static void resize(int w, int h) {
         buffer.Dispose();
@@ -41,6 +43,8 @@ public class game {
         frag.shading = shading;
         frag.atlas = blockatlas;
         frag.atlassize = atlassize;
+
+        camera.pos.Y = chunking.get_real_height_at(new(0,0))+2;
     }
 
     public static void render_world(ICanvas c, IDepthMask depth) {
@@ -67,6 +71,9 @@ public class game {
         chunks_rendered = 0;
 
         Vector3 min, max;
+        float csize;
+
+        //List<Vector3> chunksToGenerate = new();
 
         for(long x = minx; x < maxx; x++)
             for(long y = miny; y < maxy; y++)
@@ -74,22 +81,32 @@ public class game {
                     if(math.sqrdist(camera.pos, new(x*global.chk_size,y*global.chk_size,z*global.chk_size)) > math.sqr(renderdist*global.chk_size))
                         continue;
 
-                    if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk)) {
-                        chunking.gen_chunk(new(x,y,z));
+                    if(!map.scene.TryGetValue(new(x,y,z), out chunk? chk)) {  
+                        //because chunk gen is expensive, frustum culling :D
+                        min = new(x*global.chk_size-.5f,y*global.chk_size-.5f,z*global.chk_size-.5f);
+                        max = new(x*global.chk_size+global.chk_size+.5f,y*global.chk_size+global.chk_size+.5f,z*global.chk_size+global.chk_size+.5f);
+
+                        if(!frustum.IsAABBInFrustum(min,max,camera.view_frustum))
+                            continue;
+
+                        map.scene.TryAdd(new(x,y,z),null);
+                        chunksToGenerate.Add(new(x,y,z));
                         continue;
                     } if(chk == null)
                         continue;
                     if(chk.m_inds.Length == 0)
                         continue;
 
-                    min = new(x*global.chk_size,y*global.chk_size,z*global.chk_size);
-                    max = new(x*global.chk_size+global.chk_size,y*global.chk_size+global.chk_size,z*global.chk_size+global.chk_size);
+                    min = new(x*global.chk_size-.5f,y*global.chk_size-.5f,z*global.chk_size-.5f);
+                    max = new(x*global.chk_size+global.chk_size+.5f,y*global.chk_size+global.chk_size+.5f,z*global.chk_size+global.chk_size+.5f);
 
                     if(!frustum.IsAABBInFrustum(min,max,camera.view_frustum))
                         continue;
                     
 
-                    vert.wmat = Matrix4x4.CreateScale(chk.size) * Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size-(1-chk.size)*global.chk_size*2,z*global.chk_size);
+                    csize = ease.oback(math.clamp01(Time.TotalTime-chk.starttime));
+
+                    vert.wmat = Matrix4x4.CreateScale(csize) * Matrix4x4.CreateTranslation(x*global.chk_size,y*global.chk_size-(1-csize)*global.chk_size*2,z*global.chk_size);
 
                     tris_rendered += chk.m_inds.Length/3;
                     chunks_rendered++;
@@ -99,17 +116,30 @@ public class game {
                     buffer_c.WriteMask(depth, null);
                     //c.DrawTriangles<vertex>(chk.m_verts, chk.m_inds);
 
-                    // temp fix for simf bug, but its only here bc chunking is async and most graphics class functions dont work async (its also easy to remove)
-                    if (chk.geom == null && chk.m_inds.Length > 0)
+                    // temp fix for simf bug, but its only here bc chunking is on a different thread and most graphics class functions dont work on a different thread (its also easy to remove)
+                    if (chk.geom == null)
                         chk.geom = Graphics.CreateGeometry<vertex>(chk.m_verts, chk.m_inds);
-                    if (chk.geom != null)
-                        buffer_c.DrawGeometry(chk.geom);
-
-                    chk.size += ease.dyn(chk.size, 1, 12);
-                    chk.size = math.clamp01(chk.size);
+                    buffer_c.DrawGeometry(chk.geom);
 
                     //c.Flush();
                 }
+
+        var tasks = chunksToGenerate.Select(pos => Task.Run(() => chunking.gen_chunk_thing(pos)));
+        Task.WhenAll(tasks);
+
+        chunksToGenerate.Clear();
+
+        /*global.frames_waited_for_dispatch++;
+
+        if(global.frames_waited_for_dispatch >= global.frames_between_dispatch) {
+            int i = 0;
+            while(i < global.max_chunk_gen_threads && i < chunksToGenerate.Count) {
+                ThreadPool.UnsafeQueueUserWorkItem(_ => chunking.gen_chunk_thing(chunksToGenerate[i]), null);
+                chunksToGenerate.RemoveAt(i); i++;
+            }
+
+            global.frames_waited_for_dispatch = 0;
+        }*/
 
         buffer_c.Flush();
 

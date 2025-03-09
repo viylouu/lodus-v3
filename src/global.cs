@@ -4,9 +4,11 @@ using SimulationFramework;
 public class global {
     public static FixedResolutionInterceptor fr_intercept = Application.GetComponent<FixedResolutionInterceptor>();
 
-    public const byte chk_size = 8;
+    //STAY AT 32!!!!!!!!!!!!!!!!!!!!!!!!!
+    public const byte chk_size = 32;
     public static long chks_loaded = 0;
     public static long filled_chks_loaded = 0;
+    public static int frames_waited_for_dispatch = 0;
 
     //settings
 
@@ -24,6 +26,9 @@ public class global {
     public static float fog_density = 0.5f;
 
     public static bool pixelate = true;
+
+    public static int max_chunk_gen_threads = 20;
+    public static int frames_between_dispatch = 120;
 
 
     public static void window_resized(int w, int h) {
