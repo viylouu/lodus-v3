@@ -18,11 +18,8 @@ public class chunking {
 
     public static int seed;
 
-    static ConcurrentDictionary<Vector3, float> generatedBlockShapes = new();
-    static int blockShapeSamples = 32/8;
-
     static ConcurrentDictionary<Vector2, float> generatedBlockHeights = new();
-    static int blockHeightSamples = 32/8;
+    static int blockHeightSamples = 32/5;
 
 
     public static void load() {
@@ -176,9 +173,6 @@ public class chunking {
         map.scene[pos] = c;
     }
 
-    static float smoothstep(float t)
-        => t * t * (3 - 2 * t);
-
     public static float get_real_height_at(Vector2 pos) {
         float bass = height.GetNoise(pos.X,pos.Y)*12;
         float big = bigheight.GetNoise(pos.X,pos.Y)*72;
@@ -228,8 +222,8 @@ public class chunking {
                 return BB;
         }
 
-        float diffx = smoothstep((x-sample1X)/blockHeightSamples);
-        float diffz = smoothstep((z-sample1Z)/blockHeightSamples);
+        float diffx = (x-sample1X)/blockHeightSamples;
+        float diffz = (z-sample1Z)/blockHeightSamples;
 
         return math.lerp(math.lerp(AA,BA,diffx),math.lerp(AB,BB,diffx),diffz);
     }
